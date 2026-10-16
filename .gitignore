@@ -1,0 +1,66 @@
+# Dependencies
+node_modules/
+.pnp
+.pnp.js
+
+# Production / build output
+dist/
+dist-ssr/
+build/
+*.local
+
+# Tauri build artifacts & bundles
+src-tauri/target/
+src-tauri/gen/
+bundles/
+
+# Databases, exports, and backups (Strictly never commit)
+*.db
+*.db-journal
+*.db-wal
+*.db-shm
+*.sqlite
+*.sqlite3
+*.sqlite-journal
+*.sqlite-wal
+*.sqlite-shm
+backups/
+exports/
+
+# Environment files & secrets
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.p12
+*.pfx
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# OS and Editor files
+.DS_Store
+Thumbs.db
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+.vscode/*
+!.vscode/extensions.json
+
+# Python / venv (local development artifacts)
+.venv/
+__pycache__/
+*.pyc
+
+# Coverage
+coverage/
