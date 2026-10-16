@@ -75,6 +75,7 @@ export interface CountdownResult {
   hours: number;
   minutes: number;
   isOverdue: boolean;
+  isPast: boolean;
   formatted: string;
 }
 
@@ -118,9 +119,12 @@ export function calculateCountdown(
     hours,
     minutes,
     isOverdue,
+    isPast: isOverdue,
     formatted,
   };
 }
+
+export { calculateCountdown as getCountdown };
 
 /**
  * If only a date (YYYY-MM-DD) is supplied, default to 23:59 school time and flag as assumed.

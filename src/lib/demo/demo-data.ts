@@ -267,3 +267,5 @@ export async function removeDemoData(executor: Executor): Promise<void> {
     await executor.execute(`DELETE FROM ${table}`);
   }
 }
+
+export const clearDemoData = removeDemoData;

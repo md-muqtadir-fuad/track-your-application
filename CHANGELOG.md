@@ -9,6 +9,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Design system tokens and academic styling guidelines in `docs/design.md`.
+- Full interactive UI views for all 8 screens: Dashboard with Today action items, Applications (table and Kanban board), Recommenders matrix with chase email template generator, Faculty outreach tracker, Calendar with Month and Agenda modes, Documents & scores, Offers side-by-side comparison, and Settings.
+- Global Command Palette (`Cmd/Ctrl+K`), Quick Add Modal (`Cmd/Ctrl+N`), and Keyboard Help Modal (`?`).
+- Application readiness calculation (0–100%) and at-risk assessment service.
+- RFC 5545 standard `.ics` calendar export and JSON/CSV data backup engine.
+- Local user outreach loader (`user-loader.ts`) supporting private local datasets.
 - SQLite database schema with full migration runner via `tauri-plugin-sql` and test runner via `sql.js`.
 - Type-safe database repositories for universities, applications, milestones, contacts, letter requests, faculty links, interactions, and settings.
 - IANA-compliant wall-clock date/time utility module with dual-time countdowns and Arizona DST-free handling.

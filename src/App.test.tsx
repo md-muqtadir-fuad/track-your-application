@@ -3,9 +3,9 @@ import { render, screen, within } from '@testing-library/react';
 import App from './App';
 
 describe('App', () => {
-  it('renders the sidebar navigation items', () => {
+  it('renders the sidebar navigation items after database initialises', async () => {
     render(<App />);
-    expect(screen.getByText('Track Your PhD')).toBeInTheDocument();
+    expect(await screen.findByText('Track Your PhD')).toBeInTheDocument();
 
     const nav = screen.getByRole('navigation', { name: /main navigation/i });
     expect(within(nav).getByText('Dashboard')).toBeInTheDocument();

@@ -10,6 +10,11 @@ import {
   ReminderLogSchema,
   OfferSchema,
   StatusChangeSchema,
+  FacultyLinkSchema,
+  InteractionSchema,
+  DocumentSchema,
+  TestScoreSchema,
+  TemplateSchema,
   type University,
   type Application,
   type Milestone,
@@ -20,6 +25,12 @@ import {
   type ReminderLog,
   type Offer,
   type StatusChange,
+  type FacultyLink,
+  type Interaction,
+  type Document,
+  type TestScore,
+  type Template,
+  type TemplateKind,
   type ApplicationStatus,
   type ContactKind,
   type ChecklistItemStatus,
@@ -31,6 +42,11 @@ import {
   type ContactInput,
   type LetterRequestInput,
   type OfferInput,
+  type FacultyLinkInput,
+  type InteractionInput,
+  type DocumentInput,
+  type TestScoreInput,
+  type TemplateInput,
 } from './schema';
 
 export type CreateUniversityData = Omit<
@@ -58,6 +74,26 @@ export type CreateLetterRequestData = Omit<
   'id' | 'created_at' | 'updated_at' | 'deleted_at'
 >;
 export type CreateOfferData = Omit<OfferInput, 'id' | 'created_at' | 'updated_at' | 'deleted_at'>;
+export type CreateFacultyLinkData = Omit<
+  FacultyLinkInput,
+  'id' | 'created_at' | 'updated_at' | 'deleted_at'
+>;
+export type CreateInteractionData = Omit<
+  InteractionInput,
+  'id' | 'created_at' | 'updated_at' | 'deleted_at'
+>;
+export type CreateDocumentData = Omit<
+  DocumentInput,
+  'id' | 'created_at' | 'updated_at' | 'deleted_at'
+>;
+export type CreateTestScoreData = Omit<
+  TestScoreInput,
+  'id' | 'created_at' | 'updated_at' | 'deleted_at'
+>;
+export type CreateTemplateData = Omit<
+  TemplateInput,
+  'id' | 'created_at' | 'updated_at' | 'deleted_at'
+>;
 
 function nowIso(): string {
   return DateTime.utc().toISO({ suppressMilliseconds: true }) ?? new Date().toISOString();
@@ -375,6 +411,14 @@ export class MilestoneRepository {
 export class ChecklistItemRepository {
   constructor(private readonly executor: Executor) {}
 
+  async listAll(includeDeleted = false): Promise<ChecklistItem[]> {
+    const query = includeDeleted
+      ? 'SELECT * FROM checklist_item ORDER BY sort_order ASC, created_at ASC'
+      : 'SELECT * FROM checklist_item WHERE deleted_at IS NULL ORDER BY sort_order ASC, created_at ASC';
+    const rows = await this.executor.select<Record<string, unknown>>(query);
+    return rows.map((r) => ChecklistItemSchema.parse(r));
+  }
+
   async listByApplication(applicationId: string, includeDeleted = false): Promise<ChecklistItem[]> {
     const query = includeDeleted
       ? 'SELECT * FROM checklist_item WHERE application_id = ? ORDER BY sort_order ASC, created_at ASC'
@@ -415,6 +459,42 @@ export class ChecklistItemRepository {
     return ChecklistItemSchema.parse(rows[0]!);
   }
 
+  async getById(id: string): Promise<ChecklistItem | null> {
+    const rows = await this.executor.select<Record<string, unknown>>(
+      'SELECT * FROM checklist_item WHERE id = ?',
+      [id],
+    );
+    return rows[0] ? ChecklistItemSchema.parse(rows[0]) : null;
+  }
+
+  async update(id: string, data: Partial<CreateChecklistItemData>): Promise<ChecklistItem | null> {
+    const existing = await this.getById(id);
+    if (!existing) return null;
+    const now = nowIso();
+    const updated = { ...existing, ...data, updated_at: now };
+    await this.executor.execute(
+      `UPDATE checklist_item SET
+         kind = ?, label = ?, status = ?, due_offset_days = ?, due_local = ?, tz = ?,
+         document_id = ?, test_score_id = ?, notes = ?, sort_order = ?, updated_at = ?
+       WHERE id = ?`,
+      [
+        updated.kind,
+        updated.label,
+        updated.status,
+        updated.due_offset_days ?? null,
+        updated.due_local ?? null,
+        updated.tz ?? null,
+        updated.document_id ?? null,
+        updated.test_score_id ?? null,
+        updated.notes ?? '',
+        updated.sort_order ?? 0,
+        now,
+        id,
+      ],
+    );
+    return updated;
+  }
+
   async updateStatus(id: string, status: ChecklistItemStatus): Promise<void> {
     await this.executor.execute(
       'UPDATE checklist_item SET status = ?, updated_at = ? WHERE id = ?',
@@ -426,6 +506,13 @@ export class ChecklistItemRepository {
     await this.executor.execute(
       'UPDATE checklist_item SET deleted_at = ?, updated_at = ? WHERE id = ?',
       [nowIso(), nowIso(), id],
+    );
+  }
+
+  async restore(id: string): Promise<void> {
+    await this.executor.execute(
+      'UPDATE checklist_item SET deleted_at = NULL, updated_at = ? WHERE id = ?',
+      [nowIso(), id],
     );
   }
 }
@@ -487,12 +574,49 @@ export class ContactRepository {
     return (await this.getById(id))!;
   }
 
+  async update(id: string, data: Partial<CreateContactData>): Promise<Contact | null> {
+    const existing = await this.getById(id);
+    if (!existing) return null;
+    const now = nowIso();
+    const updated = { ...existing, ...data, updated_at: now };
+    await this.executor.execute(
+      `UPDATE contact SET
+         kind = ?, name = ?, email = ?, title = ?, affiliation = ?, university_id = ?,
+         website = ?, notes = ?, outreach_status = ?, next_follow_up_on = ?, intro_via = ?,
+         updated_at = ?
+       WHERE id = ?`,
+      [
+        updated.kind,
+        updated.name,
+        updated.email,
+        updated.title,
+        updated.affiliation,
+        updated.university_id,
+        updated.website,
+        updated.notes,
+        updated.outreach_status,
+        updated.next_follow_up_on,
+        updated.intro_via,
+        now,
+        id,
+      ],
+    );
+    return updated;
+  }
+
   async softDelete(id: string): Promise<void> {
     await this.executor.execute('UPDATE contact SET deleted_at = ?, updated_at = ? WHERE id = ?', [
       nowIso(),
       nowIso(),
       id,
     ]);
+  }
+
+  async restore(id: string): Promise<void> {
+    await this.executor.execute(
+      'UPDATE contact SET deleted_at = NULL, updated_at = ? WHERE id = ?',
+      [nowIso(), id],
+    );
   }
 }
 
@@ -697,4 +821,429 @@ export class OfferRepository {
     );
     return OfferSchema.parse(rows[0]!);
   }
+
+  async upsert(data: CreateOfferData): Promise<Offer> {
+    const existing = await this.getByApplicationId(data.application_id);
+    if (existing) {
+      const now = nowIso();
+      const updated = { ...existing, ...data, updated_at: now };
+      await this.executor.execute(
+        `UPDATE offer SET
+           funding_type = ?, stipend_amount = ?, stipend_period = ?, currency = ?,
+           tuition = ?, health_insurance = ?, years_guaranteed = ?, fees_not_covered = ?,
+           other_terms = ?, letter_path = ?, response_due_local = ?, response_tz = ?,
+           decision = ?, updated_at = ?
+         WHERE id = ?`,
+        [
+          updated.funding_type,
+          updated.stipend_amount,
+          updated.stipend_period,
+          updated.currency,
+          updated.tuition,
+          updated.health_insurance,
+          updated.years_guaranteed,
+          updated.fees_not_covered,
+          updated.other_terms,
+          updated.letter_path,
+          updated.response_due_local,
+          updated.response_tz,
+          updated.decision,
+          now,
+          existing.id,
+        ],
+      );
+      return (await this.getByApplicationId(data.application_id))!;
+    }
+    return this.create(data);
+  }
+
+  async listAll(includeDeleted = false): Promise<Offer[]> {
+    const query = includeDeleted
+      ? 'SELECT * FROM offer ORDER BY created_at DESC'
+      : 'SELECT * FROM offer WHERE deleted_at IS NULL ORDER BY created_at DESC';
+    const rows = await this.executor.select<Record<string, unknown>>(query);
+    return rows.map((r) => OfferSchema.parse(r));
+  }
+}
+
+export class FacultyLinkRepository {
+  constructor(private readonly executor: Executor) {}
+
+  async listByApplication(applicationId: string, includeDeleted = false): Promise<FacultyLink[]> {
+    const query = includeDeleted
+      ? 'SELECT * FROM faculty_link WHERE application_id = ?'
+      : 'SELECT * FROM faculty_link WHERE application_id = ? AND deleted_at IS NULL';
+    const rows = await this.executor.select<Record<string, unknown>>(query, [applicationId]);
+    return rows.map((r) => FacultyLinkSchema.parse(r));
+  }
+
+  async listByContact(contactId: string, includeDeleted = false): Promise<FacultyLink[]> {
+    const query = includeDeleted
+      ? 'SELECT * FROM faculty_link WHERE contact_id = ?'
+      : 'SELECT * FROM faculty_link WHERE contact_id = ? AND deleted_at IS NULL';
+    const rows = await this.executor.select<Record<string, unknown>>(query, [contactId]);
+    return rows.map((r) => FacultyLinkSchema.parse(r));
+  }
+
+  async link(data: CreateFacultyLinkData): Promise<FacultyLink> {
+    const id = generateId();
+    const now = nowIso();
+    await this.executor.execute(
+      `INSERT INTO faculty_link (id, application_id, contact_id, role, notes, created_at, updated_at)
+       VALUES (?, ?, ?, ?, ?, ?, ?)`,
+      [
+        id,
+        data.application_id,
+        data.contact_id,
+        data.role ?? 'potential_advisor',
+        data.notes ?? '',
+        now,
+        now,
+      ],
+    );
+    const rows = await this.executor.select<Record<string, unknown>>(
+      'SELECT * FROM faculty_link WHERE id = ?',
+      [id],
+    );
+    return FacultyLinkSchema.parse(rows[0]!);
+  }
+
+  async unlink(id: string): Promise<void> {
+    await this.executor.execute(
+      'UPDATE faculty_link SET deleted_at = ?, updated_at = ? WHERE id = ?',
+      [nowIso(), nowIso(), id],
+    );
+  }
+
+  async unlinkByAppAndContact(applicationId: string, contactId: string): Promise<void> {
+    await this.executor.execute(
+      'UPDATE faculty_link SET deleted_at = ?, updated_at = ? WHERE application_id = ? AND contact_id = ?',
+      [nowIso(), nowIso(), applicationId, contactId],
+    );
+  }
+}
+
+export class InteractionRepository {
+  constructor(private readonly executor: Executor) {}
+
+  async listByContact(contactId: string, includeDeleted = false): Promise<Interaction[]> {
+    const query = includeDeleted
+      ? 'SELECT * FROM interaction WHERE contact_id = ? ORDER BY occurred_on DESC'
+      : 'SELECT * FROM interaction WHERE contact_id = ? AND deleted_at IS NULL ORDER BY occurred_on DESC';
+    const rows = await this.executor.select<Record<string, unknown>>(query, [contactId]);
+    return rows.map((r) => InteractionSchema.parse(r));
+  }
+
+  async listByApplication(applicationId: string, includeDeleted = false): Promise<Interaction[]> {
+    const query = includeDeleted
+      ? 'SELECT * FROM interaction WHERE application_id = ? ORDER BY occurred_on DESC'
+      : 'SELECT * FROM interaction WHERE application_id = ? AND deleted_at IS NULL ORDER BY occurred_on DESC';
+    const rows = await this.executor.select<Record<string, unknown>>(query, [applicationId]);
+    return rows.map((r) => InteractionSchema.parse(r));
+  }
+
+  async listRecent(limit = 50, includeDeleted = false): Promise<Interaction[]> {
+    const query = includeDeleted
+      ? `SELECT * FROM interaction ORDER BY occurred_on DESC LIMIT ${limit}`
+      : `SELECT * FROM interaction WHERE deleted_at IS NULL ORDER BY occurred_on DESC LIMIT ${limit}`;
+    const rows = await this.executor.select<Record<string, unknown>>(query);
+    return rows.map((r) => InteractionSchema.parse(r));
+  }
+
+  async create(data: CreateInteractionData): Promise<Interaction> {
+    const id = generateId();
+    const now = nowIso();
+    await this.executor.execute(
+      `INSERT INTO interaction (id, contact_id, application_id, occurred_on, channel, direction, summary, follow_up_on, created_at, updated_at)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+      [
+        id,
+        data.contact_id,
+        data.application_id ?? null,
+        data.occurred_on,
+        data.channel ?? 'email',
+        data.direction ?? 'sent',
+        data.summary,
+        data.follow_up_on ?? null,
+        now,
+        now,
+      ],
+    );
+
+    if (data.follow_up_on) {
+      await this.executor.execute(
+        'UPDATE contact SET next_follow_up_on = ?, updated_at = ? WHERE id = ?',
+        [data.follow_up_on, now, data.contact_id],
+      );
+    }
+
+    const rows = await this.executor.select<Record<string, unknown>>(
+      'SELECT * FROM interaction WHERE id = ?',
+      [id],
+    );
+    return InteractionSchema.parse(rows[0]!);
+  }
+
+  async softDelete(id: string): Promise<void> {
+    await this.executor.execute(
+      'UPDATE interaction SET deleted_at = ?, updated_at = ? WHERE id = ?',
+      [nowIso(), nowIso(), id],
+    );
+  }
+}
+
+export class DocumentRepository {
+  constructor(private readonly executor: Executor) {}
+
+  async list(includeDeleted = false): Promise<Document[]> {
+    const query = includeDeleted
+      ? 'SELECT * FROM document ORDER BY updated_at DESC'
+      : 'SELECT * FROM document WHERE deleted_at IS NULL ORDER BY updated_at DESC';
+    const rows = await this.executor.select<Record<string, unknown>>(query);
+    return rows.map((r) => DocumentSchema.parse(r));
+  }
+
+  async getById(id: string): Promise<Document | null> {
+    const rows = await this.executor.select<Record<string, unknown>>(
+      'SELECT * FROM document WHERE id = ?',
+      [id],
+    );
+    return rows[0] ? DocumentSchema.parse(rows[0]) : null;
+  }
+
+  async create(data: CreateDocumentData): Promise<Document> {
+    const id = generateId();
+    const now = nowIso();
+    await this.executor.execute(
+      `INSERT INTO document (id, kind, title, version_label, file_path, notes, created_at, updated_at)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
+      [
+        id,
+        data.kind,
+        data.title,
+        data.version_label ?? 'v1',
+        data.file_path,
+        data.notes ?? '',
+        now,
+        now,
+      ],
+    );
+    return (await this.getById(id))!;
+  }
+
+  async update(id: string, data: Partial<CreateDocumentData>): Promise<Document | null> {
+    const existing = await this.getById(id);
+    if (!existing) return null;
+    const now = nowIso();
+    const updated = { ...existing, ...data, updated_at: now };
+    await this.executor.execute(
+      `UPDATE document SET kind = ?, title = ?, version_label = ?, file_path = ?, notes = ?, updated_at = ? WHERE id = ?`,
+      [
+        updated.kind,
+        updated.title,
+        updated.version_label,
+        updated.file_path,
+        updated.notes,
+        now,
+        id,
+      ],
+    );
+    return updated;
+  }
+
+  async softDelete(id: string): Promise<void> {
+    await this.executor.execute('UPDATE document SET deleted_at = ?, updated_at = ? WHERE id = ?', [
+      nowIso(),
+      nowIso(),
+      id,
+    ]);
+  }
+}
+
+export class TestScoreRepository {
+  constructor(private readonly executor: Executor) {}
+
+  async list(includeDeleted = false): Promise<TestScore[]> {
+    const query = includeDeleted
+      ? 'SELECT * FROM test_score ORDER BY taken_on DESC'
+      : 'SELECT * FROM test_score WHERE deleted_at IS NULL ORDER BY taken_on DESC';
+    const rows = await this.executor.select<Record<string, unknown>>(query);
+    return rows.map((r) => TestScoreSchema.parse(r));
+  }
+
+  async getById(id: string): Promise<TestScore | null> {
+    const rows = await this.executor.select<Record<string, unknown>>(
+      'SELECT * FROM test_score WHERE id = ?',
+      [id],
+    );
+    return rows[0] ? TestScoreSchema.parse(rows[0]) : null;
+  }
+
+  async create(data: CreateTestScoreData): Promise<TestScore> {
+    const id = generateId();
+    const now = nowIso();
+    await this.executor.execute(
+      `INSERT INTO test_score (id, test, taken_on, total, sections, valid_until, notes, created_at, updated_at)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+      [
+        id,
+        data.test,
+        data.taken_on,
+        data.total,
+        data.sections ?? '{}',
+        data.valid_until,
+        data.notes ?? '',
+        now,
+        now,
+      ],
+    );
+    return (await this.getById(id))!;
+  }
+
+  async update(id: string, data: Partial<CreateTestScoreData>): Promise<TestScore | null> {
+    const existing = await this.getById(id);
+    if (!existing) return null;
+    const now = nowIso();
+    const updated = { ...existing, ...data, updated_at: now };
+    await this.executor.execute(
+      `UPDATE test_score SET test = ?, taken_on = ?, total = ?, sections = ?, valid_until = ?, notes = ?, updated_at = ? WHERE id = ?`,
+      [
+        updated.test,
+        updated.taken_on,
+        updated.total,
+        updated.sections,
+        updated.valid_until,
+        updated.notes,
+        now,
+        id,
+      ],
+    );
+    return updated;
+  }
+
+  async softDelete(id: string): Promise<void> {
+    await this.executor.execute(
+      'UPDATE test_score SET deleted_at = ?, updated_at = ? WHERE id = ?',
+      [nowIso(), nowIso(), id],
+    );
+  }
+}
+
+export class StatusChangeRepository {
+  constructor(private readonly executor: Executor) {}
+
+  async listByApplication(applicationId: string): Promise<StatusChange[]> {
+    const rows = await this.executor.select<Record<string, unknown>>(
+      'SELECT * FROM status_change WHERE application_id = ? ORDER BY changed_at ASC',
+      [applicationId],
+    );
+    return rows.map((r) => StatusChangeSchema.parse(r));
+  }
+
+  async recordChange(applicationId: string, fromStatus: string, toStatus: string): Promise<void> {
+    const now = nowIso();
+    await this.executor.execute(
+      `INSERT INTO status_change (id, application_id, from_status, to_status, changed_at, created_at, updated_at)
+       VALUES (?, ?, ?, ?, ?, ?, ?)`,
+      [generateId(), applicationId, fromStatus, toStatus, now, now, now],
+    );
+  }
+}
+
+export class TemplateRepository {
+  constructor(private readonly executor: Executor) {}
+
+  async list(kind?: TemplateKind, includeDeleted = false): Promise<Template[]> {
+    let query = 'SELECT * FROM template WHERE 1=1';
+    const params: unknown[] = [];
+    if (!includeDeleted) {
+      query += ' AND deleted_at IS NULL';
+    }
+    if (kind) {
+      query += ' AND kind = ?';
+      params.push(kind);
+    }
+    query += ' ORDER BY name ASC';
+    const rows = await this.executor.select<Record<string, unknown>>(query, params);
+    return rows.map((r) => TemplateSchema.parse(r));
+  }
+
+  async getById(id: string): Promise<Template | null> {
+    const rows = await this.executor.select<Record<string, unknown>>(
+      'SELECT * FROM template WHERE id = ?',
+      [id],
+    );
+    return rows[0] ? TemplateSchema.parse(rows[0]) : null;
+  }
+
+  async create(data: CreateTemplateData): Promise<Template> {
+    const id = generateId();
+    const now = nowIso();
+    await this.executor.execute(
+      `INSERT INTO template (id, kind, name, body, created_at, updated_at)
+       VALUES (?, ?, ?, ?, ?, ?)`,
+      [id, data.kind, data.name, data.body, now, now],
+    );
+    return (await this.getById(id))!;
+  }
+
+  async update(id: string, data: Partial<CreateTemplateData>): Promise<Template | null> {
+    const existing = await this.getById(id);
+    if (!existing) return null;
+    const now = nowIso();
+    const updated = { ...existing, ...data, updated_at: now };
+    await this.executor.execute(
+      'UPDATE template SET kind = ?, name = ?, body = ?, updated_at = ? WHERE id = ?',
+      [updated.kind, updated.name, updated.body, now, id],
+    );
+    return updated;
+  }
+
+  async softDelete(id: string): Promise<void> {
+    await this.executor.execute('UPDATE template SET deleted_at = ?, updated_at = ? WHERE id = ?', [
+      nowIso(),
+      nowIso(),
+      id,
+    ]);
+  }
+}
+
+export interface Repositories {
+  executor: Executor;
+  universities: UniversityRepository;
+  applications: ApplicationRepository;
+  milestones: MilestoneRepository;
+  checklistItems: ChecklistItemRepository;
+  contacts: ContactRepository;
+  letterRequests: LetterRequestRepository;
+  facultyLinks: FacultyLinkRepository;
+  interactions: InteractionRepository;
+  documents: DocumentRepository;
+  testScores: TestScoreRepository;
+  offers: OfferRepository;
+  statusChanges: StatusChangeRepository;
+  templates: TemplateRepository;
+  reminderLogs: ReminderLogRepository;
+  settings: SettingRepository;
+}
+
+export function createRepositories(executor: Executor): Repositories {
+  return {
+    executor,
+    universities: new UniversityRepository(executor),
+    applications: new ApplicationRepository(executor),
+    milestones: new MilestoneRepository(executor),
+    checklistItems: new ChecklistItemRepository(executor),
+    contacts: new ContactRepository(executor),
+    letterRequests: new LetterRequestRepository(executor),
+    facultyLinks: new FacultyLinkRepository(executor),
+    interactions: new InteractionRepository(executor),
+    documents: new DocumentRepository(executor),
+    testScores: new TestScoreRepository(executor),
+    offers: new OfferRepository(executor),
+    statusChanges: new StatusChangeRepository(executor),
+    templates: new TemplateRepository(executor),
+    reminderLogs: new ReminderLogRepository(executor),
+    settings: new SettingRepository(executor),
+  };
 }

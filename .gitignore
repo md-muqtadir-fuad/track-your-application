@@ -26,6 +26,8 @@ bundles/
 *.sqlite-shm
 backups/
 exports/
+user-data.json
+src/user-data.json
 
 # Environment files & secrets
 .env
