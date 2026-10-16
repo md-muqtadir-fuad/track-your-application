@@ -18,9 +18,9 @@ describe('user-loader', () => {
     await executor.close();
   });
 
-  it('checks for presence of user data without throwing', () => {
+  it('checks for presence of user data and detects local file', () => {
     const present = hasUserData();
-    expect(typeof present).toBe('boolean');
+    expect(present).toBe(true);
   });
 
   it('executes loadUserData cleanly against SQLite repositories', async () => {

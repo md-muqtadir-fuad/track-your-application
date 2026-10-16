@@ -64,12 +64,13 @@ export function DatabaseProvider({ children }: { children: React.ReactNode }) {
         // Check if user data exists and seed if empty or if previous state had dummy data
         if (hasUserData()) {
           const unis = await r.universities.list();
+          const apps = await r.applications.list();
           const hasDemoUni = unis.some((u) => u.name === 'Example State University');
           const hasUserUni = unis.some((u) => u.name === 'NC State University');
           if (hasDemoUni && !hasUserUni) {
             await clearDemoData(r.executor);
             await loadUserData(r);
-          } else if (unis.length === 0) {
+          } else if (unis.length === 0 || apps.length === 0) {
             await loadUserData(r);
           }
         }

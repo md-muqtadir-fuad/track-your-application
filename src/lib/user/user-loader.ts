@@ -51,16 +51,27 @@ export interface UserDataPayload {
 }
 
 // Dynamically check if local user-data.json is present (omitted in CI / clean repo)
-const userModules = import.meta.glob<{ default: UserDataPayload }>('/src/user-data.json', {
-  eager: true,
-});
-
-export function hasUserData(): boolean {
-  return Boolean(userModules['/src/user-data.json']?.default);
-}
+const userModules = import.meta.glob<Record<string, unknown>>(
+  ['../../user-data.json', '/src/user-data.json'],
+  { eager: true },
+);
 
 export function getUserData(): UserDataPayload | null {
-  return userModules['/src/user-data.json']?.default ?? null;
+  for (const key of Object.keys(userModules)) {
+    const mod = userModules[key];
+    if (!mod) continue;
+    if ('default' in mod && mod.default && typeof mod.default === 'object') {
+      return mod.default as UserDataPayload;
+    }
+    if ('faculty' in mod || 'applications' in mod || 'universities' in mod) {
+      return mod as unknown as UserDataPayload;
+    }
+  }
+  return null;
+}
+
+export function hasUserData(): boolean {
+  return getUserData() !== null;
 }
 
 export async function loadUserData(repos: Repositories): Promise<boolean> {

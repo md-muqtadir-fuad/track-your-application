@@ -215,7 +215,10 @@ function MainShell() {
         {/* View Content */}
         <main className="flex-1 overflow-auto p-8">
           {activeItem === 'dashboard' && (
-            <DashboardView onNavigate={(tab) => setActiveItem(tab as NavItemId)} />
+            <DashboardView
+              onNavigate={(tab) => setActiveItem(tab as NavItemId)}
+              onOpenQuickAdd={() => setIsQuickAddOpen(true)}
+            />
           )}
           {activeItem === 'applications' && <ApplicationsView />}
           {activeItem === 'recommenders' && <RecommendersView />}
