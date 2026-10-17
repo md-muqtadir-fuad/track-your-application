@@ -97,26 +97,22 @@ export const SettingsView: React.FC = () => {
   return (
     <div className="space-y-8 max-w-4xl">
       {/* 1. Time Zone & General Preferences */}
-      <section className="rounded-xl border border-slate-200 bg-white p-6 shadow-xs dark:border-slate-800 dark:bg-slate-900 space-y-4">
-        <div className="flex items-center gap-2 border-b border-slate-100 pb-3 dark:border-slate-800">
-          <Globe className="h-4 w-4 text-blue-600" />
-          <h3 className="text-sm font-bold text-slate-900 dark:text-slate-100">
-            Time Zone & Display
-          </h3>
+      <section className="border border-[#000000]/20 bg-white p-6 shadow-xs space-y-4 text-[#000000]">
+        <div className="flex items-center gap-2 border-b border-[#000000]/15 pb-3">
+          <Globe className="h-4 w-4 text-[#8E1616]" />
+          <h3 className="text-sm font-bold text-[#000000] font-serif">Time Zone & Display</h3>
         </div>
 
         <div className="space-y-4 text-xs">
           <div>
-            <label className="block font-semibold text-slate-700 dark:text-slate-300">
-              My Applicant Time Zone
-            </label>
-            <p className="text-slate-500 mb-1.5">
+            <label className="block font-semibold text-[#000000]">My Applicant Time Zone</label>
+            <p className="text-[#000000]/70 mb-1.5 font-serif">
               All deadlines will display live dual-time countdowns translated into your local time.
             </p>
             <select
               value={userTz}
               onChange={(e) => setUserTz(e.target.value)}
-              className="block w-full max-w-md rounded-md border border-slate-300 bg-white px-3 py-2 text-xs text-slate-900 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100 font-medium"
+              className="block w-full max-w-md border border-[#000000]/25 bg-[#F8EEDF] px-3 py-2 text-xs font-mono text-[#000000] focus:border-[#8E1616] focus:outline-none"
             >
               <optgroup label="Primary / User Time Zone">
                 <option value="Asia/Dhaka">Asia/Dhaka (Bangladesh Standard Time, UTC+6)</option>
@@ -140,60 +136,58 @@ export const SettingsView: React.FC = () => {
       </section>
 
       {/* 2. Deadlines & Defaults */}
-      <section className="rounded-xl border border-slate-200 bg-white p-6 shadow-xs dark:border-slate-800 dark:bg-slate-900 space-y-4">
-        <div className="flex items-center gap-2 border-b border-slate-100 pb-3 dark:border-slate-800">
-          <SettingsIcon className="h-4 w-4 text-blue-600" />
-          <h3 className="text-sm font-bold text-slate-900 dark:text-slate-100">
+      <section className="border border-[#000000]/20 bg-white p-6 shadow-xs space-y-4 text-[#000000]">
+        <div className="flex items-center gap-2 border-b border-[#000000]/15 pb-3">
+          <SettingsIcon className="h-4 w-4 text-[#8E1616]" />
+          <h3 className="text-sm font-serif font-bold text-[#000000]">
             Application Defaults & Lead Times
           </h3>
         </div>
 
         <form onSubmit={handleSaveGeneral} className="space-y-4 text-xs max-w-md">
           <div>
-            <label className="block font-semibold text-slate-700 dark:text-slate-300">
+            <label className="block font-semibold text-[#000000]">
               Default Deadline Time (School Time)
             </label>
             <input
               type="text"
               value={defaultTime}
               onChange={(e) => setDefaultTime(e.target.value)}
-              className="mt-1 block w-full rounded-md border border-slate-300 p-2 font-mono dark:border-slate-700 dark:bg-slate-800"
+              className="mt-1 block w-full border border-[#000000]/25 bg-[#F8EEDF] p-2 font-mono text-xs text-[#000000] focus:border-[#8E1616] focus:outline-none"
             />
-            <span className="text-[11px] text-slate-400">
+            <span className="text-[11px] font-mono text-[#000000]/50">
               Used when an application does not specify an exact cut-off hour.
             </span>
           </div>
 
           <div>
-            <label className="block font-semibold text-slate-700 dark:text-slate-300">
+            <label className="block font-semibold text-[#000000]">
               Reminder Lead Days (comma-separated)
             </label>
             <input
               type="text"
               value={reminderLeadDays}
               onChange={(e) => setReminderLeadDays(e.target.value)}
-              className="mt-1 block w-full rounded-md border border-slate-300 p-2 font-mono dark:border-slate-700 dark:bg-slate-800"
+              className="mt-1 block w-full border border-[#000000]/25 bg-[#F8EEDF] p-2 font-mono text-xs text-[#000000] focus:border-[#8E1616] focus:outline-none"
             />
-            <span className="text-[11px] text-slate-400">
+            <span className="text-[11px] font-mono text-[#000000]/50">
               In-app reminders fire at these threshold days before every deadline.
             </span>
           </div>
 
           <div>
-            <label className="block font-semibold text-slate-700 dark:text-slate-300">
-              Default Currency
-            </label>
+            <label className="block font-semibold text-[#000000]">Default Currency</label>
             <input
               type="text"
               value={defaultCurrency}
               onChange={(e) => setDefaultCurrency(e.target.value)}
-              className="mt-1 block w-full rounded-md border border-slate-300 p-2 font-mono dark:border-slate-700 dark:bg-slate-800"
+              className="mt-1 block w-full border border-[#000000]/25 bg-[#F8EEDF] p-2 font-mono text-xs text-[#000000] focus:border-[#8E1616] focus:outline-none"
             />
           </div>
 
           <button
             type="submit"
-            className="rounded-md bg-blue-600 px-4 py-2 font-semibold text-white hover:bg-blue-700"
+            className="bg-[#8E1616] px-4 py-2 font-mono text-xs font-bold uppercase tracking-wider text-[#F8EEDF] hover:bg-[#6d1010] border border-[#8E1616]"
           >
             Save Preferences
           </button>
@@ -201,19 +195,17 @@ export const SettingsView: React.FC = () => {
       </section>
 
       {/* 3. Data Management & Backups */}
-      <section className="rounded-xl border border-slate-200 bg-white p-6 shadow-xs dark:border-slate-800 dark:bg-slate-900 space-y-4">
-        <div className="flex items-center gap-2 border-b border-slate-100 pb-3 dark:border-slate-800">
-          <Database className="h-4 w-4 text-emerald-600" />
-          <h3 className="text-sm font-bold text-slate-900 dark:text-slate-100">
-            Data, Backups & Datasets
-          </h3>
+      <section className="border border-[#000000]/20 bg-white p-6 shadow-xs space-y-4 text-[#000000]">
+        <div className="flex items-center gap-2 border-b border-[#000000]/15 pb-3">
+          <Database className="h-4 w-4 text-[#8E1616]" />
+          <h3 className="text-sm font-serif font-bold text-[#000000]">Data, Backups & Datasets</h3>
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
           {/* User Data Load */}
-          <div className="rounded-lg border border-slate-200 p-4 dark:border-slate-800 space-y-2">
-            <h4 className="font-bold text-slate-800 dark:text-slate-200">Load Active User Data</h4>
-            <p className="text-slate-500">
+          <div className="border border-[#000000]/20 bg-[#F8EEDF]/40 p-4 space-y-2 text-[#000000]">
+            <h4 className="font-serif font-bold text-[#000000]">Load Active User Data</h4>
+            <p className="text-[#000000]/70 font-serif">
               Loads your active faculty contacts (NC State, USF, Dr. Md Abdul Quddus, Dr. Sarper
               Aydın) and interaction logs.
             </p>
@@ -223,7 +215,7 @@ export const SettingsView: React.FC = () => {
                 await loadUser();
                 showToast({ message: 'Loaded your faculty and application records.' });
               }}
-              className="inline-flex items-center gap-1.5 rounded-md bg-blue-600 px-3 py-1.5 font-semibold text-white hover:bg-blue-700"
+              className="inline-flex items-center gap-1.5 bg-[#8E1616] px-3 py-1.5 font-mono text-xs font-bold uppercase tracking-wider text-[#F8EEDF] hover:bg-[#6d1010] border border-[#8E1616]"
             >
               <RefreshCw className="h-3.5 w-3.5" />
               Load My Data
@@ -231,9 +223,9 @@ export const SettingsView: React.FC = () => {
           </div>
 
           {/* Fictional Demo Data */}
-          <div className="rounded-lg border border-slate-200 p-4 dark:border-slate-800 space-y-2">
-            <h4 className="font-bold text-slate-800 dark:text-slate-200">Fictional Demo Data</h4>
-            <p className="text-slate-500">
+          <div className="border border-[#000000]/20 bg-[#F8EEDF]/40 p-4 space-y-2 text-[#000000]">
+            <h4 className="font-serif font-bold text-[#000000]">Fictional Demo Data</h4>
+            <p className="text-[#000000]/70 font-serif">
               Populates realistic dummy data ("Example State University") for demonstrations and UI
               testing.
             </p>
@@ -243,52 +235,54 @@ export const SettingsView: React.FC = () => {
                 await loadDemo();
                 showToast({ message: 'Loaded fictional demo dataset.' });
               }}
-              className="inline-flex items-center gap-1.5 rounded-md border border-slate-300 px-3 py-1.5 font-semibold text-slate-700 hover:bg-slate-50 dark:border-slate-700 dark:text-slate-300"
+              className="inline-flex items-center gap-1.5 border border-[#000000]/25 bg-[#F8EEDF] px-3 py-1.5 font-mono text-xs font-bold uppercase tracking-wider text-[#000000] hover:bg-[#E8C999]/40"
             >
               Load Demo Data
             </button>
           </div>
 
           {/* Export JSON */}
-          <div className="rounded-lg border border-slate-200 p-4 dark:border-slate-800 space-y-2">
-            <h4 className="font-bold text-slate-800 dark:text-slate-200">Full JSON Backup</h4>
-            <p className="text-slate-500">
+          <div className="border border-[#000000]/20 bg-[#F8EEDF]/40 p-4 space-y-2 text-[#000000]">
+            <h4 className="font-serif font-bold text-[#000000]">Full JSON Backup</h4>
+            <p className="text-[#000000]/70 font-serif">
               Export an offline JSON snapshot containing all universities, applications, checklists,
               and contacts.
             </p>
             <button
               type="button"
               onClick={handleExportJson}
-              className="inline-flex items-center gap-1.5 rounded-md border border-slate-300 px-3 py-1.5 font-semibold text-slate-700 hover:bg-slate-50 dark:border-slate-700 dark:text-slate-300"
+              className="inline-flex items-center gap-1.5 border border-[#000000]/25 bg-[#F8EEDF] px-3 py-1.5 font-mono text-xs font-bold uppercase tracking-wider text-[#000000] hover:bg-[#E8C999]/40"
             >
-              <Download className="h-3.5 w-3.5" />
+              <Download className="h-3.5 w-3.5 text-[#8E1616]" />
               Export JSON Backup
             </button>
           </div>
 
           {/* Export CSV */}
-          <div className="rounded-lg border border-slate-200 p-4 dark:border-slate-800 space-y-2">
-            <h4 className="font-bold text-slate-800 dark:text-slate-200">Applications CSV</h4>
-            <p className="text-slate-500">
+          <div className="border border-[#000000]/20 bg-[#F8EEDF]/40 p-4 space-y-2 text-[#000000]">
+            <h4 className="font-serif font-bold text-[#000000]">Applications CSV</h4>
+            <p className="text-[#000000]/70 font-serif">
               Export applications list as a spreadsheet-compatible CSV file with deadlines and
               statuses.
             </p>
             <button
               type="button"
               onClick={handleExportCsv}
-              className="inline-flex items-center gap-1.5 rounded-md border border-slate-300 px-3 py-1.5 font-semibold text-slate-700 hover:bg-slate-50 dark:border-slate-700 dark:text-slate-300"
+              className="inline-flex items-center gap-1.5 border border-[#000000]/25 bg-[#F8EEDF] px-3 py-1.5 font-mono text-xs font-bold uppercase tracking-wider text-[#000000] hover:bg-[#E8C999]/40"
             >
-              <Download className="h-3.5 w-3.5" />
+              <Download className="h-3.5 w-3.5 text-[#8E1616]" />
               Export CSV
             </button>
           </div>
         </div>
 
         {/* Clear database button */}
-        <div className="pt-4 border-t border-slate-100 dark:border-slate-800 flex justify-between items-center text-xs">
+        <div className="pt-4 border-t border-[#000000]/15 flex justify-between items-center text-xs">
           <div>
-            <span className="font-bold text-rose-600">Danger Zone</span>
-            <p className="text-slate-500">Clear all records from the local SQLite database.</p>
+            <span className="font-serif font-bold text-[#8E1616]">Danger Zone</span>
+            <p className="text-[#000000]/60 font-serif">
+              Clear all records from the local SQLite database.
+            </p>
           </div>
           <button
             type="button"
@@ -300,7 +294,7 @@ export const SettingsView: React.FC = () => {
                 showToast({ message: 'Database reset to empty.' });
               }
             }}
-            className="rounded-md border border-rose-300 bg-rose-50 px-3 py-1.5 font-semibold text-rose-700 hover:bg-rose-100 dark:border-rose-900 dark:bg-rose-950 dark:text-rose-300"
+            className="border border-[#8E1616] bg-[#8E1616]/10 px-3 py-1.5 font-mono text-xs font-bold uppercase tracking-wider text-[#8E1616] hover:bg-[#8E1616] hover:text-[#F8EEDF] transition-colors"
           >
             Clear Database
           </button>
@@ -308,38 +302,38 @@ export const SettingsView: React.FC = () => {
       </section>
 
       {/* 4. Trash & Recovery */}
-      <section className="rounded-xl border border-slate-200 bg-white p-6 shadow-xs dark:border-slate-800 dark:bg-slate-900 space-y-4">
-        <div className="flex items-center justify-between border-b border-slate-100 pb-3 dark:border-slate-800">
+      <section className="border border-[#000000]/20 bg-white p-6 shadow-xs space-y-4 text-[#000000]">
+        <div className="flex items-center justify-between border-b border-[#000000]/15 pb-3">
           <div className="flex items-center gap-2">
-            <Trash2 className="h-4 w-4 text-slate-500" />
-            <h3 className="text-sm font-bold text-slate-900 dark:text-slate-100">
+            <Trash2 className="h-4 w-4 text-[#8E1616]" />
+            <h3 className="text-sm font-serif font-bold text-[#000000]">
               Trash & Soft Delete Recovery
             </h3>
           </div>
-          <span className="font-mono text-xs text-slate-400">
+          <span className="font-mono text-xs text-[#000000]/50">
             {deletedApps.length + deletedUnis.length + deletedContacts.length} items in trash
           </span>
         </div>
 
         {deletedApps.length === 0 && deletedContacts.length === 0 ? (
-          <p className="text-xs text-slate-400 py-2">Trash is empty. No deleted records.</p>
+          <p className="text-xs font-serif italic text-[#000000]/50 py-2">
+            Trash is empty. No deleted records.
+          </p>
         ) : (
           <div className="space-y-2 text-xs">
             {deletedApps.map((a) => (
               <div
                 key={a.id}
-                className="flex items-center justify-between rounded-lg bg-slate-50 p-3 dark:bg-slate-800"
+                className="flex items-center justify-between border border-[#000000]/15 bg-[#F8EEDF] p-3 text-[#000000]"
               >
                 <div>
-                  <span className="font-semibold text-slate-800 dark:text-slate-200">
-                    {a.program}
-                  </span>
-                  <span className="text-slate-400 ml-2">({a.term})</span>
+                  <span className="font-serif font-bold text-[#000000]">{a.program}</span>
+                  <span className="font-mono text-[#000000]/60 ml-2">({a.term})</span>
                 </div>
                 <button
                   type="button"
                   onClick={() => handleRestoreApp(a.id)}
-                  className="inline-flex items-center gap-1 rounded bg-blue-600 px-2.5 py-1 font-semibold text-white hover:bg-blue-700"
+                  className="inline-flex items-center gap-1 bg-[#8E1616] px-2.5 py-1 font-mono text-xs font-bold uppercase text-[#F8EEDF] hover:bg-[#6d1010] border border-[#8E1616]"
                 >
                   <RotateCcw className="h-3.5 w-3.5" />
                   Restore
@@ -350,16 +344,16 @@ export const SettingsView: React.FC = () => {
             {deletedContacts.map((c) => (
               <div
                 key={c.id}
-                className="flex items-center justify-between rounded-lg bg-slate-50 p-3 dark:bg-slate-800"
+                className="flex items-center justify-between border border-[#000000]/15 bg-[#F8EEDF] p-3 text-[#000000]"
               >
                 <div>
-                  <span className="font-semibold text-slate-800 dark:text-slate-200">{c.name}</span>
-                  <span className="text-slate-400 ml-2">({c.kind})</span>
+                  <span className="font-serif font-bold text-[#000000]">{c.name}</span>
+                  <span className="font-mono text-[#000000]/60 ml-2">({c.kind})</span>
                 </div>
                 <button
                   type="button"
                   onClick={() => handleRestoreContact(c.id)}
-                  className="inline-flex items-center gap-1 rounded bg-blue-600 px-2.5 py-1 font-semibold text-white hover:bg-blue-700"
+                  className="inline-flex items-center gap-1 bg-[#8E1616] px-2.5 py-1 font-mono text-xs font-bold uppercase text-[#F8EEDF] hover:bg-[#6d1010] border border-[#8E1616]"
                 >
                   <RotateCcw className="h-3.5 w-3.5" />
                   Restore

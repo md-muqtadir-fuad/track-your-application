@@ -22,7 +22,7 @@ export const CountdownBadge: React.FC<CountdownBadgeProps> = ({
   useEffect(() => {
     const timer = setInterval(() => {
       setCountdown(getCountdown(dueLocal, schoolTz));
-    }, 30000); // update every 30s
+    }, 30000);
     return () => clearInterval(timer);
   }, [dueLocal, schoolTz]);
 
@@ -33,17 +33,13 @@ export const CountdownBadge: React.FC<CountdownBadgeProps> = ({
     return (
       <div className="flex flex-col text-xs font-mono">
         <span
-          className={`font-semibold ${
-            countdown.isPast
-              ? 'text-slate-400 dark:text-slate-500'
-              : isUrgent
-                ? 'text-red-600 dark:text-red-400 font-bold'
-                : 'text-slate-800 dark:text-slate-200'
+          className={`font-bold tracking-tight ${
+            countdown.isPast ? 'text-[#000000]/40' : isUrgent ? 'text-[#8E1616]' : 'text-[#000000]'
           }`}
         >
           {countdown.isPast ? 'Passed' : countdown.formatted}
         </span>
-        <span className="text-[10px] text-slate-500 dark:text-slate-400">
+        <span className="text-[10px] text-[#000000]/60">
           {dual.schoolTime} {dual.schoolZoneAbbr} ({dual.userTime} {dual.userZoneAbbr})
         </span>
       </div>
@@ -52,42 +48,44 @@ export const CountdownBadge: React.FC<CountdownBadgeProps> = ({
 
   return (
     <div
-      className={`rounded-md border p-2.5 transition-colors ${
+      className={`border p-2.5 transition-colors ${
         countdown.isPast
-          ? 'border-slate-200 bg-slate-50 text-slate-500 dark:border-slate-800 dark:bg-slate-900/60'
+          ? 'border-[#000000]/15 bg-[#F8EEDF] text-[#000000]/50'
           : isUrgent
-            ? 'border-red-300 bg-red-50 text-red-900 dark:border-red-800/80 dark:bg-red-950/40 dark:text-red-200'
-            : 'border-slate-200 bg-white text-slate-800 dark:border-slate-800 dark:bg-slate-900 dark:text-slate-200'
+            ? 'border-[#8E1616] bg-[#F8EEDF] text-[#8E1616]'
+            : 'border-[#000000]/20 bg-white text-[#000000]'
       }`}
     >
       <div className="flex items-center justify-between gap-2">
-        <div className="flex items-center gap-1.5 font-mono text-sm font-bold tracking-tight">
+        <div className="flex items-center gap-1.5 font-mono text-xs font-bold uppercase tracking-wider">
           <Clock
-            className={`h-4 w-4 ${isUrgent ? 'text-red-600 dark:text-red-400 animate-pulse' : 'text-slate-500'}`}
+            className={`h-3.5 w-3.5 ${isUrgent ? 'text-[#8E1616] animate-pulse' : 'text-[#8E1616]'}`}
           />
-          <span>{countdown.isPast ? 'Deadline passed' : `${countdown.formatted} remaining`}</span>
+          <span className={isUrgent ? 'text-[#8E1616]' : 'text-[#000000]'}>
+            {countdown.isPast ? 'DEADLINE PASSED' : `T - ${countdown.formatted}`}
+          </span>
         </div>
         {timeAssumed && (
           <span
             title="Time assumed at 23:59. Check the program page."
-            className="inline-flex items-center gap-1 rounded bg-amber-100 px-1.5 py-0.5 text-[10px] font-medium text-amber-800 dark:bg-amber-950/80 dark:text-amber-300"
+            className="inline-flex items-center gap-1 border border-[#E8C999] bg-[#E8C999]/30 px-1.5 py-0.2 text-[9px] font-mono font-medium text-[#000000]"
           >
-            <AlertTriangle className="h-3 w-3" />
-            Time assumed
+            <AlertTriangle className="h-2.5 w-2.5 text-[#8E1616]" />
+            ESTIMATED
           </span>
         )}
       </div>
 
-      <div className="mt-1.5 flex flex-wrap gap-x-4 gap-y-0.5 font-mono text-xs text-slate-600 dark:text-slate-400">
+      <div className="mt-1.5 flex flex-wrap gap-x-4 gap-y-0.5 font-mono text-[11px] text-[#000000]/70">
         <div>
-          <span className="text-slate-400 dark:text-slate-500">School: </span>
-          <span className="font-medium text-slate-700 dark:text-slate-300">
+          <span className="text-[#000000]/40">INSTITUTION: </span>
+          <span className="font-semibold text-[#000000]">
             {dual.schoolTime} {dual.schoolZoneAbbr}
           </span>
         </div>
         <div>
-          <span className="text-slate-400 dark:text-slate-500">My time: </span>
-          <span className="font-medium text-slate-700 dark:text-slate-300">
+          <span className="text-[#000000]/40">LOCAL: </span>
+          <span className="font-semibold text-[#000000]">
             {dual.userTime} {dual.userZoneAbbr}
           </span>
         </div>

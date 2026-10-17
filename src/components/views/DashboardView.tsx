@@ -1,14 +1,5 @@
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
-import {
-  Calendar,
-  AlertTriangle,
-  CheckCircle,
-  Clock,
-  DollarSign,
-  Users,
-  Sparkles,
-  Plus,
-} from 'lucide-react';
+import { Calendar, AlertTriangle, Clock, Users, FolderDown, Plus, ArrowRight } from 'lucide-react';
 import { DateTime } from 'luxon';
 import { useDatabase } from '../../lib/db/context';
 import { useToast } from '../ui/ToastContext';
@@ -25,7 +16,6 @@ import type {
   ChecklistItem,
   LetterRequest,
   Contact,
-  ApplicationStatus,
 } from '../../lib/db/schema';
 
 export const DashboardView: React.FC<{
@@ -82,7 +72,7 @@ export const DashboardView: React.FC<{
 
   const now = DateTime.now();
 
-  // 1. "Today" Actions (~10 next actionable items across deadlines, checklist, letters, follow-ups)
+  // 1. Next actionable items across deadlines, checklist, letters, follow-ups
   const todayActions = useMemo(() => {
     interface ActionItem {
       id: string;
@@ -106,7 +96,7 @@ export const DashboardView: React.FC<{
             id: `followup-${contact.id}`,
             title: `Follow up with ${contact.name}`,
             subtitle: `${contact.title} • ${contact.affiliation}`,
-            badge: 'Faculty Outreach',
+            badge: 'OUTREACH',
             dueDate: contact.next_follow_up_on,
             onDone: async () => {
               if (!repos) return;
@@ -129,7 +119,7 @@ export const DashboardView: React.FC<{
       }
     }
 
-    // Letters to chase
+    // Letters to follow up
     for (const lr of letterRequests) {
       if (['asked', 'link_sent'].includes(lr.status)) {
         const app = appMap.get(lr.application_id);
@@ -138,9 +128,9 @@ export const DashboardView: React.FC<{
           const uni = uniMap.get(app.university_id);
           items.push({
             id: `letter-${lr.id}`,
-            title: `Check letter from ${contact.name}`,
+            title: `Letter of recommendation from ${contact.name}`,
             subtitle: `${uni?.name} (${app.program})`,
-            badge: 'Letter of Rec',
+            badge: 'RECOMMENDATION',
             applicationId: app.id,
             onDone: async () => {
               if (!repos) return;
@@ -148,100 +138,115 @@ export const DashboardView: React.FC<{
               showToast({ message: `Marked letter from ${contact.name} as submitted.` });
               refresh();
             },
-            onSnooze: async (days) => {
-              showToast({ message: `Snoozed reminder for ${days} days.` });
+            onSnooze: async (_days) => {
+              if (!repos) return;
+              showToast({ message: 'Snoozed letter reminder.' });
+              refresh();
             },
           });
         }
       }
     }
 
-    // Open required checklist items
-    for (const item of checklistItems) {
-      if (item.status === 'todo') {
-        const app = appMap.get(item.application_id);
-        if (app && !['Submitted', 'Admitted', 'Accepted'].includes(app.status)) {
-          const uni = uniMap.get(app.university_id);
+    // Checklist items due
+    for (const cl of checklistItems.filter((item) => item.status !== 'done' && !item.deleted_at)) {
+      if (cl.due_local) {
+        const dueDt = DateTime.fromISO(cl.due_local);
+        if (dueDt.diff(now, 'days').days <= 14) {
+          const app = appMap.get(cl.application_id);
+          const uni = app ? uniMap.get(app.university_id) : undefined;
           items.push({
-            id: `checklist-${item.id}`,
-            title: item.label,
-            subtitle: `${uni?.name} (${app.program})`,
-            badge: 'Checklist',
-            applicationId: app.id,
+            id: `checklist-${cl.id}`,
+            title: cl.label,
+            subtitle: `${uni?.name ?? 'General'} • ${cl.kind.toUpperCase()}`,
+            badge: 'CHECKLIST',
+            applicationId: cl.application_id,
+            dueDate: cl.due_local,
             onDone: async () => {
               if (!repos) return;
-              await repos.checklistItems.update(item.id, { status: 'done' });
-              showToast({ message: `Completed "${item.label}".` });
+              await repos.checklistItems.updateStatus(cl.id, 'done');
+              showToast({ message: `Completed "${cl.label}".` });
               refresh();
             },
             onSnooze: async (days) => {
-              showToast({ message: `Snoozed task for ${days} days.` });
+              if (!repos) return;
+              const snoozed = DateTime.now().plus({ days }).toISODate()!;
+              await repos.checklistItems.update(cl.id, { due_local: snoozed });
+              showToast({ message: `Rescheduled to ${snoozed}.` });
+              refresh();
             },
           });
         }
       }
     }
 
-    return items.slice(0, 10);
-  }, [contacts, letterRequests, checklistItems, appMap, uniMap, repos, refresh, showToast, now]);
+    return items.slice(0, 8);
+  }, [contacts, letterRequests, checklistItems, appMap, uniMap, repos, now, refresh, showToast]);
 
-  // 2. Upcoming Deadlines (within next 60 days)
+  // 2. Upcoming Deadlines (next 60 days)
   const upcomingDeadlines = useMemo(() => {
     const list: Array<{
       application: Application;
       university: University;
       milestone: Milestone;
-      diffDays: number;
+      sortTime: number;
     }> = [];
 
     for (const app of applications) {
-      if (
-        ['Submitted', 'Admitted', 'Accepted', 'Declined', 'Withdrawn', 'Rejected'].includes(
-          app.status,
-        )
-      ) {
-        continue;
-      }
+      if (['Withdrawn', 'Declined', 'Rejected'].includes(app.status)) continue;
       const uni = uniMap.get(app.university_id);
       if (!uni) continue;
 
-      const ms = milestones.find((m) => m.application_id === app.id && m.kind === 'application');
-      if (ms) {
-        const deadlineDt = parseWallClock(ms.due_local, ms.tz);
-        const diff = deadlineDt.diff(now, 'days').days;
-        if (diff >= -1 && diff <= 60) {
-          list.push({ application: app, university: uni, milestone: ms, diffDays: diff });
+      const appMilestones = milestones.filter(
+        (m) => m.application_id === app.id && m.kind === 'application',
+      );
+      for (const m of appMilestones) {
+        const dt = parseWallClock(m.due_local, m.tz);
+        const daysDiff = dt.diff(now, 'days').days;
+        if (daysDiff >= -1 && daysDiff <= 60) {
+          list.push({
+            application: app,
+            university: uni,
+            milestone: m,
+            sortTime: dt.toMillis(),
+          });
         }
       }
     }
 
-    return list.sort((a, b) => a.diffDays - b.diffDays);
+    list.sort((a, b) => a.sortTime - b.sortTime);
+    return list;
   }, [applications, uniMap, milestones, now]);
 
-  // 3. At-risk Applications
+  // 3. At-risk applications
   const atRiskList = useMemo(() => {
-    const list: Array<{
-      application: Application;
-      university: University;
-      reasons: string[];
-      readiness: number;
-    }> = [];
+    return applications
+      .filter((app) => !['Withdrawn', 'Declined', 'Rejected', 'Accepted'].includes(app.status))
+      .map((app) => {
+        const uni = uniMap.get(app.university_id);
+        const appLetters = letterRequests.filter((l) => l.application_id === app.id);
+        const appChecklist = checklistItems.filter((c) => c.application_id === app.id);
+        const deadlineMilestone = milestones.find(
+          (m) => m.application_id === app.id && m.kind === 'application',
+        );
 
-    for (const app of applications) {
-      const uni = uniMap.get(app.university_id);
-      if (!uni) continue;
-      const ms = milestones.find((m) => m.application_id === app.id && m.kind === 'application');
-      const items = checklistItems.filter((i) => i.application_id === app.id);
-      const letters = letterRequests.filter((l) => l.application_id === app.id);
-      const readiness = calculateReadiness(items, letters);
+        const readiness = calculateReadiness(appChecklist, appLetters);
+        const risk = isAtRisk(app, deadlineMilestone, readiness, appLetters, now);
 
-      const risk = isAtRisk(app, ms, readiness, letters, now);
-      if (risk.atRisk) {
-        list.push({ application: app, university: uni, reasons: risk.reasons, readiness });
-      }
-    }
-
-    return list;
+        return {
+          application: app,
+          university: uni ?? {
+            name: 'Unknown University',
+            tz: 'UTC',
+            id: '',
+            created_at: '',
+            updated_at: '',
+          },
+          reasons: risk.reasons,
+          readiness: readiness,
+        };
+      })
+      .filter((item) => item.reasons.length > 0);
   }, [applications, uniMap, milestones, checklistItems, letterRequests, now]);
 
   // 4. Status Counts
@@ -263,30 +268,14 @@ export const DashboardView: React.FC<{
     return counts;
   }, [applications]);
 
-  // 5. Letters Per Recommender
-  const recommenderStats = useMemo(() => {
-    const recs = contacts.filter((c) => c.kind === 'recommender');
-    return recs.map((rec) => {
-      const requests = letterRequests.filter((l) => l.contact_id === rec.id && !l.deleted_at);
-      const submitted = requests.filter(
-        (l) => l.status === 'submitted' || l.status === 'confirmed_received',
-      ).length;
-      return {
-        contact: rec,
-        submitted,
-        total: requests.length,
-      };
-    });
-  }, [contacts, letterRequests]);
-
-  // 6. Fees Breakdown
+  // 5. Financials
   const feesSummary = useMemo(() => {
     let planned = 0;
     let paid = 0;
     let waived = 0;
 
     for (const app of applications) {
-      const fee = app.fee_amount ?? 0;
+      const fee = app.fee_amount ?? 85;
       if (app.waiver_status === 'granted') {
         waived += fee;
       } else if (app.fee_paid_on) {
@@ -299,25 +288,41 @@ export const DashboardView: React.FC<{
   }, [applications]);
 
   return (
-    <div className="space-y-6">
-      {/* Welcome / Empty State Hero when 0 applications */}
+    <div className="space-y-8 max-w-6xl mx-auto pb-12">
+      {/* Dossier Header & Identification */}
+      <div className="border-b-2 border-[#000000] pb-4">
+        <div className="flex flex-col sm:flex-row sm:items-baseline justify-between gap-2">
+          <div>
+            <span className="font-mono text-[10px] tracking-widest uppercase text-[#8E1616] font-bold">
+              RECORD ARCHIVE • ACADEMIC YEAR 2026–2027
+            </span>
+            <h1 className="font-serif text-3xl font-bold tracking-tight text-[#000000] mt-1">
+              Doctoral Application Dossier
+            </h1>
+          </div>
+          <div className="flex items-center gap-3 font-mono text-xs text-[#000000]/70">
+            <span>
+              TARGET PROGRAMS: <strong className="text-[#8E1616]">{applications.length}</strong>
+            </span>
+            <span>•</span>
+            <span>
+              TIMEZONE: <strong className="text-[#000000]">{userTz}</strong>
+            </span>
+          </div>
+        </div>
+      </div>
+
+      {/* Empty State / Quick Load */}
       {applications.length === 0 && (
-        <div className="relative overflow-hidden rounded-2xl border border-blue-200/80 bg-gradient-to-br from-blue-50/80 via-white to-indigo-50/50 p-6 shadow-xs dark:border-blue-900/40 dark:from-slate-900 dark:via-slate-900 dark:to-blue-950/40">
+        <div className="border border-[#000000] bg-white p-6">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6">
-            <div className="space-y-1.5 max-w-xl">
-              <div className="flex items-center gap-2">
-                <span className="inline-flex items-center rounded-full bg-blue-100 px-2.5 py-0.5 text-xs font-semibold text-blue-700 dark:bg-blue-900/60 dark:text-blue-300">
-                  Getting Started
-                </span>
-                <span className="text-xs text-slate-400">Local-first & private</span>
-              </div>
-              <h2 className="text-base font-bold tracking-tight text-slate-900 dark:text-slate-100">
-                Welcome to your PhD Application Command Center
+            <div className="space-y-1 max-w-xl">
+              <h2 className="font-serif text-xl font-bold text-[#8E1616]">
+                Initiate Candidate Records
               </h2>
-              <p className="text-xs text-slate-600 dark:text-slate-300 leading-relaxed">
-                Track hard deadlines across global time zones, faculty correspondence,
-                recommendation letter requests, and admission offers with zero telemetry or network
-                calls.
+              <p className="text-xs text-[#000000]/70 leading-relaxed font-sans">
+                No active program entries found in local database. Load verified university outreach
+                dossiers or create a new entry.
               </p>
             </div>
 
@@ -327,33 +332,33 @@ export const DashboardView: React.FC<{
                   type="button"
                   onClick={async () => {
                     await loadUser();
-                    showToast({ message: 'Loaded your outreach records & applications!' });
+                    showToast({ message: 'Loaded outreach records (NC State & USF)' });
                     refresh();
                   }}
-                  className="inline-flex items-center gap-2 rounded-xl bg-blue-600 px-4 py-2.5 text-xs font-semibold text-white shadow-xs hover:bg-blue-700 transition-all active:scale-[0.98]"
+                  className="inline-flex items-center gap-2 bg-[#8E1616] text-[#F8EEDF] px-3.5 py-2 text-xs font-mono font-semibold uppercase tracking-wider hover:bg-[#6d1010] border border-[#8E1616] transition"
                 >
-                  <Sparkles className="h-4 w-4" />
-                  Load My Outreach (NC State & USF)
+                  <FolderDown className="h-4 w-4 text-[#E8C999]" />
+                  Load Dossier (NC State & USF)
                 </button>
               )}
               {onOpenQuickAdd && (
                 <button
                   type="button"
                   onClick={onOpenQuickAdd}
-                  className="inline-flex items-center gap-1.5 rounded-xl border border-slate-300 bg-white px-3.5 py-2.5 text-xs font-semibold text-slate-700 hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200 transition-colors"
+                  className="inline-flex items-center gap-1.5 border border-[#000000] bg-white px-3 py-2 text-xs font-mono font-semibold text-[#000000] hover:bg-[#E8C999]/30 transition"
                 >
                   <Plus className="h-3.5 w-3.5" />
-                  New Application
+                  New Entry
                 </button>
               )}
               <button
                 type="button"
                 onClick={async () => {
                   await loadDemo();
-                  showToast({ message: 'Loaded fictional demo dataset.' });
+                  showToast({ message: 'Loaded fictional dataset.' });
                   refresh();
                 }}
-                className="inline-flex items-center gap-1.5 rounded-xl border border-slate-200 bg-transparent px-3 py-2.5 text-xs font-medium text-slate-500 hover:bg-slate-100 dark:border-slate-800 dark:text-slate-400 dark:hover:bg-slate-800 transition-colors"
+                className="inline-flex items-center gap-1.5 border border-[#000000]/30 bg-transparent px-3 py-2 text-xs font-mono text-[#000000]/60 hover:bg-[#000000]/5 transition"
               >
                 Sample Data
               </button>
@@ -362,51 +367,245 @@ export const DashboardView: React.FC<{
         </div>
       )}
 
-      {/* Status metrics chips */}
-      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
-        {Object.entries(statusCounts).map(([status, count]) => (
-          <div
-            key={status}
-            onClick={() => onNavigate('applications')}
-            className="cursor-pointer rounded-xl border border-slate-200 bg-white p-3.5 shadow-xs hover:border-slate-300 dark:border-slate-800 dark:bg-slate-900 transition-colors"
-          >
-            <div className="flex items-center justify-between">
-              <span className="text-xs font-medium text-slate-500 dark:text-slate-400">
-                {status}
-              </span>
-              <StatusBadge status={status as ApplicationStatus} size="sm" />
-            </div>
-            <p className="mt-2 font-mono text-2xl font-bold tracking-tight text-slate-900 dark:text-slate-100">
-              {count}
-            </p>
-          </div>
-        ))}
+      {/* SCIENTIFIC FIGURE 1: Doctoral Application Pipeline Vector Plot */}
+      <div className="border border-[#000000] bg-white p-5">
+        <div className="flex items-center justify-between border-b border-[#000000]/15 pb-2 mb-4">
+          <span className="font-mono text-[10px] tracking-wider uppercase font-bold text-[#8E1616]">
+            FIG. 1 — APPLICATION LIFECYCLE & STAGE VERIFICATION
+          </span>
+          <span className="font-mono text-[10px] text-[#000000]/50">DISCRETE PHASE STATE</span>
+        </div>
+
+        {/* Vector SVG Diagram */}
+        <div className="w-full overflow-x-auto py-2">
+          <svg viewBox="0 0 880 90" className="w-full min-w-[700px] h-24 select-none">
+            {/* Axis Baseline */}
+            <line
+              x1="40"
+              y1="45"
+              x2="840"
+              y2="45"
+              stroke="#000000"
+              strokeWidth="1.5"
+              strokeDasharray="3 3"
+            />
+
+            {/* Milestone Nodes */}
+            {[
+              { label: 'Outreach', count: contacts.length, stage: 1, x: 70 },
+              { label: 'Transcripts', count: applications.length, stage: 2, x: 200 },
+              { label: 'SOP Draft', count: applications.length, stage: 3, x: 330 },
+              { label: 'Rec Letters', count: letterRequests.length, stage: 4, x: 460 },
+              { label: 'Portal Filing', count: statusCounts.Submitted ?? 0, stage: 5, x: 590 },
+              { label: 'Interview', count: statusCounts.Interviewing ?? 0, stage: 6, x: 710 },
+              { label: 'Decision', count: statusCounts.Admitted ?? 0, stage: 7, x: 820 },
+            ].map((node) => {
+              const isFilled = (node.count ?? 0) > 0;
+              return (
+                <g key={node.label}>
+                  {/* Stem */}
+                  <line
+                    x1={node.x}
+                    y1="35"
+                    x2={node.x}
+                    y2="55"
+                    stroke="#8E1616"
+                    strokeWidth="1.5"
+                  />
+                  {/* Node Circle */}
+                  <circle
+                    cx={node.x}
+                    cy="45"
+                    r="14"
+                    fill={isFilled ? '#8E1616' : '#FFFFFF'}
+                    stroke="#000000"
+                    strokeWidth="1.5"
+                  />
+                  {/* Inner Count */}
+                  <text
+                    x={node.x}
+                    y="49"
+                    textAnchor="middle"
+                    fill={isFilled ? '#F8EEDF' : '#000000'}
+                    fontSize="11"
+                    fontFamily="JetBrains Mono, monospace"
+                    fontWeight="bold"
+                  >
+                    {node.count}
+                  </text>
+                  {/* Node Label */}
+                  <text
+                    x={node.x}
+                    y="76"
+                    textAnchor="middle"
+                    fill="#000000"
+                    fontSize="11"
+                    fontFamily="EB Garamond, serif"
+                    fontWeight="bold"
+                  >
+                    {node.label}
+                  </text>
+                  {/* Phase Index */}
+                  <text
+                    x={node.x}
+                    y="24"
+                    textAnchor="middle"
+                    fill="#8E1616"
+                    fontSize="9"
+                    fontFamily="JetBrains Mono, monospace"
+                  >
+                    §0{node.stage}
+                  </text>
+                </g>
+              );
+            })}
+          </svg>
+        </div>
+
+        <div className="scientific-caption border-t border-[#000000]/10 pt-2 flex justify-between">
+          <span>
+            Figure 1: Sequential doctoral candidacy phases across institutional submissions.
+          </span>
+          <span className="font-mono text-[10px] text-[#8E1616]">
+            Filled nodes denote documented candidate progress.
+          </span>
+        </div>
       </div>
 
-      {/* At-risk banner if any */}
+      {/* TABLE 1: Institutional Target Docket (LaTeX Booktabs Style) */}
+      <div className="border border-[#000000] bg-white p-5">
+        <div className="flex items-center justify-between border-b border-[#000000]/15 pb-2 mb-4">
+          <div>
+            <span className="font-mono text-[10px] tracking-wider uppercase font-bold text-[#8E1616]">
+              TABLE 1 — ACTIVE INSTITUTIONAL TARGETS & REVIEW STATUS
+            </span>
+          </div>
+          <button
+            type="button"
+            onClick={() => onNavigate('applications')}
+            className="font-mono text-xs text-[#8E1616] hover:underline inline-flex items-center gap-1 font-semibold"
+          >
+            Manage Applications <ArrowRight className="h-3 w-3" />
+          </button>
+        </div>
+
+        {applications.length === 0 ? (
+          <p className="text-xs font-serif italic text-[#000000]/50 py-4 text-center">
+            No active institutional entries in current record docket.
+          </p>
+        ) : (
+          <div className="overflow-x-auto">
+            <table className="scientific-table font-sans">
+              <thead>
+                <tr>
+                  <th style={{ width: '25%' }}>Institution</th>
+                  <th style={{ width: '25%' }}>Program & Degree</th>
+                  <th style={{ width: '20%' }}>Advisor Outreach</th>
+                  <th style={{ width: '15%' }}>Deadline (Wall-Clock)</th>
+                  <th style={{ width: '15%' }}>Status</th>
+                </tr>
+              </thead>
+              <tbody>
+                {applications.map((app) => {
+                  const uni = uniMap.get(app.university_id);
+                  const appFaculty = contacts.find(
+                    (c) =>
+                      c.kind === 'faculty' &&
+                      c.notes?.toLowerCase().includes(uni?.name.toLowerCase() ?? ''),
+                  );
+                  const appMilestone = milestones.find(
+                    (m) => m.application_id === app.id && m.kind === 'application',
+                  );
+
+                  return (
+                    <tr
+                      key={app.id}
+                      onClick={() => onNavigate('applications', app.id)}
+                      className="cursor-pointer hover:bg-[#E8C999]/20 transition-colors"
+                    >
+                      <td>
+                        <div className="font-serif font-bold text-sm text-[#000000]">
+                          {uni?.name ?? 'Unknown University'}
+                        </div>
+                        <div className="font-mono text-[10px] text-[#000000]/50">
+                          {uni?.city}, {uni?.country}
+                        </div>
+                      </td>
+                      <td>
+                        <div className="font-medium text-xs text-[#000000]">{app.program}</div>
+                        <div className="font-mono text-[10px] text-[#8E1616] uppercase">
+                          {app.term} • Priority {app.priority}
+                        </div>
+                      </td>
+                      <td>
+                        {appFaculty ? (
+                          <div>
+                            <div className="font-serif font-bold text-xs text-[#000000]">
+                              {appFaculty.name}
+                            </div>
+                            <div className="font-mono text-[10px] text-[#8E1616]">
+                              Status: {appFaculty.outreach_status.toUpperCase()}
+                            </div>
+                          </div>
+                        ) : (
+                          <span className="font-mono text-[10px] text-[#000000]/40">
+                            No faculty logged
+                          </span>
+                        )}
+                      </td>
+                      <td className="font-mono text-xs">
+                        {appMilestone ? (
+                          <div>
+                            <span className="font-bold text-[#8E1616]">
+                              {appMilestone.due_local.slice(0, 10)}
+                            </span>
+                            <span className="text-[10px] text-[#000000]/60 block">
+                              {appMilestone.due_local.slice(11, 16)}{' '}
+                              {appMilestone.tz.split('/')[1]?.replace('_', ' ')}
+                            </span>
+                          </div>
+                        ) : (
+                          <span className="text-[#000000]/40">—</span>
+                        )}
+                      </td>
+                      <td>
+                        <StatusBadge status={app.status} size="sm" />
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
+        )}
+      </div>
+
+      {/* At-Risk Warning (If Detected) */}
       {atRiskList.length > 0 && (
-        <div className="rounded-xl border border-rose-200 bg-rose-50/70 p-4 dark:border-rose-900/60 dark:bg-rose-950/40">
-          <div className="flex items-center gap-2 text-rose-800 dark:text-rose-300 font-semibold text-sm">
-            <AlertTriangle className="h-4 w-4" />
-            <span>{atRiskList.length} Application(s) At Risk</span>
+        <div className="border border-[#8E1616] bg-[#F8EEDF] p-4">
+          <div className="flex items-center gap-2 text-[#8E1616] font-serif font-bold text-base">
+            <AlertTriangle className="h-4 w-4 text-[#8E1616]" />
+            <span>ATTENTION: {atRiskList.length} Program Submission(s) At Risk</span>
           </div>
           <div className="mt-3 space-y-2">
             {atRiskList.map((item) => (
               <div
                 key={item.application.id}
                 onClick={() => onNavigate('applications', item.application.id)}
-                className="cursor-pointer flex flex-wrap items-center justify-between rounded-lg bg-white p-3 shadow-2xs dark:bg-slate-900 border border-rose-100 dark:border-rose-950 text-xs"
+                className="cursor-pointer border border-[#8E1616]/30 bg-white p-3 text-xs flex justify-between items-center"
               >
                 <div>
-                  <span className="font-bold text-slate-900 dark:text-slate-100">
+                  <span className="font-serif font-bold text-[#000000] text-sm">
                     {item.university.name}
                   </span>{' '}
-                  <span className="text-slate-500">• {item.application.program}</span>
-                  <p className="mt-0.5 text-rose-700 dark:text-rose-400">
+                  <span className="font-mono text-[#000000]/60 text-[11px]">
+                    ({item.application.program})
+                  </span>
+                  <p className="mt-0.5 font-mono text-[11px] text-[#8E1616]">
                     {item.reasons.join(' ')}
                   </p>
                 </div>
-                <div className="w-28 mt-2 sm:mt-0">
+                <div className="w-28 shrink-0">
                   <ProgressBar value={item.readiness} size="sm" />
                 </div>
               </div>
@@ -415,101 +614,136 @@ export const DashboardView: React.FC<{
         </div>
       )}
 
-      {/* Main Grid: Today List & Upcoming Deadlines */}
+      {/* Main Grid: Agenda & Deadlines */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-        {/* Left Column (7 cols): Today Actions */}
+        {/* Left Column (7 cols): Scholarly Checklist / Action Docket */}
         <div className="lg:col-span-7 space-y-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <Calendar className="h-4 w-4 text-blue-600 dark:text-blue-400" />
-              <h3 className="text-sm font-semibold text-slate-900 dark:text-slate-100">
-                Today's Action List
-              </h3>
-            </div>
-            <span className="rounded-full bg-slate-100 px-2 py-0.5 text-[11px] font-medium text-slate-600 dark:bg-slate-800 dark:text-slate-300 font-mono">
-              {todayActions.length} pending
-            </span>
-          </div>
-
-          <div className="rounded-xl border border-slate-200 bg-white shadow-xs dark:border-slate-800 dark:bg-slate-900 divide-y divide-slate-100 dark:divide-slate-800">
-            {todayActions.length === 0 ? (
-              <div className="p-8 text-center text-xs text-slate-400">
-                <CheckCircle className="mx-auto h-8 w-8 text-emerald-500 mb-2" />
-                You are all caught up! No urgent actions pending today.
+          <div className="border border-[#000000] bg-white p-5">
+            <div className="flex items-center justify-between border-b border-[#000000]/15 pb-2 mb-3">
+              <div className="flex items-center gap-2">
+                <Calendar className="h-4 w-4 text-[#8E1616]" />
+                <h3 className="font-serif text-base font-bold text-[#000000]">
+                  Immediate Candidacy Actions
+                </h3>
               </div>
-            ) : (
-              todayActions.map((action) => (
-                <div
-                  key={action.id}
-                  className="flex items-center justify-between p-3.5 text-xs hover:bg-slate-50/60 dark:hover:bg-slate-850/50 transition-colors"
-                >
-                  <div className="pr-3">
-                    <div className="flex items-center gap-2">
-                      <span className="rounded bg-slate-100 px-1.5 py-0.5 text-[10px] font-semibold text-slate-600 dark:bg-slate-800 dark:text-slate-300">
-                        {action.badge}
-                      </span>
-                      <p className="font-semibold text-slate-900 dark:text-slate-100">
-                        {action.title}
+              <span className="font-mono text-[10px] font-bold text-[#8E1616] border border-[#8E1616] px-1.5 py-0.2">
+                {todayActions.length} PENDING
+              </span>
+            </div>
+
+            <div className="divide-y divide-[#000000]/10">
+              {todayActions.length === 0 ? (
+                <div className="p-8 text-center text-xs font-serif italic text-[#000000]/60">
+                  No immediate actions scheduled for today. All doctoral deadlines and outreach
+                  tasks are on trajectory.
+                </div>
+              ) : (
+                todayActions.map((action) => (
+                  <div
+                    key={action.id}
+                    className="flex items-center justify-between py-3 text-xs hover:bg-[#E8C999]/15 transition-colors"
+                  >
+                    <div className="pr-3">
+                      <div className="flex items-center gap-2">
+                        <span className="border border-[#000000] bg-[#F8EEDF] px-1 py-0.2 text-[9px] font-mono font-bold text-[#000000]">
+                          {action.badge}
+                        </span>
+                        <p className="font-serif font-bold text-[#000000] text-sm">
+                          {action.title}
+                        </p>
+                      </div>
+                      <p className="mt-0.5 text-[11px] text-[#000000]/60 font-sans">
+                        {action.subtitle}
                       </p>
                     </div>
-                    <p className="mt-0.5 text-[11px] text-slate-500 line-clamp-1">
-                      {action.subtitle}
-                    </p>
-                  </div>
 
-                  <div className="flex items-center gap-2 shrink-0">
-                    <button
-                      type="button"
-                      onClick={() => action.onSnooze(1)}
-                      className="rounded border border-slate-200 px-2 py-1 text-[11px] text-slate-600 hover:bg-slate-100 dark:border-slate-700 dark:text-slate-300 dark:hover:bg-slate-800"
-                    >
-                      Snooze 1d
-                    </button>
-                    <button
-                      type="button"
-                      onClick={action.onDone}
-                      className="rounded bg-emerald-600 px-2.5 py-1 text-[11px] font-semibold text-white hover:bg-emerald-700 shadow-2xs"
-                    >
-                      Done
-                    </button>
+                    <div className="flex items-center gap-2 shrink-0 font-mono">
+                      <button
+                        type="button"
+                        onClick={() => action.onSnooze(1)}
+                        className="border border-[#000000]/25 bg-[#F8EEDF] px-2 py-1 text-[10px] text-[#000000] hover:bg-[#E8C999]/50"
+                      >
+                        Defer 1d
+                      </button>
+                      <button
+                        type="button"
+                        onClick={action.onDone}
+                        className="bg-[#8E1616] text-[#F8EEDF] px-2.5 py-1 text-[10px] font-bold uppercase hover:bg-[#6d1010]"
+                      >
+                        Mark Done
+                      </button>
+                    </div>
                   </div>
-                </div>
-              ))
-            )}
+                ))
+              )}
+            </div>
+          </div>
+
+          {/* FIG. 2B: Financial & Fee Ledger */}
+          <div className="border border-[#000000] bg-white p-5">
+            <div className="flex items-center justify-between border-b border-[#000000]/15 pb-2 mb-3">
+              <span className="font-mono text-[10px] tracking-wider uppercase font-bold text-[#8E1616]">
+                FIG. 2 — APPLICATION FEE & WAIVER ALLOCATION ($USD)
+              </span>
+              <span className="font-mono text-xs font-bold text-[#000000]">
+                TOTAL: ${feesSummary.total}
+              </span>
+            </div>
+
+            <div className="grid grid-cols-3 gap-3 text-center my-3 font-mono">
+              <div className="border border-[#000000]/20 p-2 bg-[#F8EEDF]/40">
+                <span className="text-[10px] text-[#000000]/60 block">PLANNED</span>
+                <span className="font-bold text-base text-[#8E1616]">${feesSummary.planned}</span>
+              </div>
+              <div className="border border-[#000000]/20 p-2 bg-[#F8EEDF]/40">
+                <span className="text-[10px] text-[#000000]/60 block">PAID</span>
+                <span className="font-bold text-base text-[#000000]">${feesSummary.paid}</span>
+              </div>
+              <div className="border border-[#000000]/20 p-2 bg-[#E8C999]/30">
+                <span className="text-[10px] text-[#000000]/60 block">WAIVED</span>
+                <span className="font-bold text-base text-[#8E1616]">${feesSummary.waived}</span>
+              </div>
+            </div>
+
+            <div className="scientific-caption border-t border-[#000000]/10 pt-2">
+              Figure 2: Financial ledger of institutional fee allocations, payments, and granted
+              departmental waivers.
+            </div>
           </div>
         </div>
 
-        {/* Right Column (5 cols): Upcoming Deadlines & Recommenders */}
-        <div className="lg:col-span-5 space-y-6">
-          {/* Upcoming Deadlines */}
-          <div className="space-y-3">
-            <div className="flex items-center justify-between">
+        {/* Right Column (5 cols): Chronological Deadlines Horizon */}
+        <div className="lg:col-span-5 space-y-4">
+          <div className="border border-[#000000] bg-white p-5">
+            <div className="flex items-center justify-between border-b border-[#000000]/15 pb-2 mb-3">
               <div className="flex items-center gap-2">
-                <Clock className="h-4 w-4 text-blue-600 dark:text-blue-400" />
-                <h3 className="text-sm font-semibold text-slate-900 dark:text-slate-100">
-                  Upcoming Deadlines (60 Days)
+                <Clock className="h-4 w-4 text-[#8E1616]" />
+                <h3 className="font-serif text-base font-bold text-[#000000]">
+                  Chronological Horizon (60 Days)
                 </h3>
               </div>
             </div>
 
             <div className="space-y-3">
               {upcomingDeadlines.length === 0 ? (
-                <div className="rounded-xl border border-dashed border-slate-200 p-6 text-center text-xs text-slate-400 dark:border-slate-800">
-                  No upcoming deadlines in the next 60 days.
+                <div className="border border-dashed border-[#000000]/20 p-6 text-center text-xs font-serif italic text-[#000000]/50">
+                  No program deadlines logged within the next 60 days.
                 </div>
               ) : (
                 upcomingDeadlines.map(({ application, university, milestone }) => (
                   <div
                     key={application.id}
                     onClick={() => onNavigate('applications', application.id)}
-                    className="cursor-pointer rounded-xl border border-slate-200 bg-white p-3.5 shadow-xs hover:border-blue-400 dark:border-slate-800 dark:bg-slate-900 transition-all"
+                    className="cursor-pointer border border-[#000000]/20 bg-white p-3 hover:border-[#8E1616] transition-colors"
                   >
                     <div className="flex justify-between items-start mb-2">
                       <div>
-                        <h4 className="font-bold text-xs text-slate-900 dark:text-slate-100">
+                        <h4 className="font-serif font-bold text-sm text-[#000000]">
                           {university.name}
                         </h4>
-                        <p className="text-[11px] text-slate-500">{application.program}</p>
+                        <p className="font-mono text-[10px] text-[#000000]/60">
+                          {application.program}
+                        </p>
                       </div>
                       <StatusBadge status={application.status} size="sm" />
                     </div>
@@ -526,76 +760,53 @@ export const DashboardView: React.FC<{
             </div>
           </div>
 
-          {/* Recommenders Progress */}
-          <div className="rounded-xl border border-slate-200 bg-white p-4 shadow-xs dark:border-slate-800 dark:bg-slate-900 space-y-3">
-            <div className="flex items-center justify-between">
+          {/* Letter of Recommendation Status Matrix */}
+          <div className="border border-[#000000] bg-white p-5 space-y-3">
+            <div className="flex items-center justify-between border-b border-[#000000]/15 pb-2">
               <div className="flex items-center gap-2">
-                <Users className="h-4 w-4 text-slate-500" />
-                <h4 className="text-xs font-semibold text-slate-900 dark:text-slate-100">
+                <Users className="h-4 w-4 text-[#8E1616]" />
+                <h4 className="font-serif text-sm font-bold text-[#000000]">
                   Letters by Recommender
                 </h4>
               </div>
               <button
                 type="button"
                 onClick={() => onNavigate('recommenders')}
-                className="text-[11px] text-blue-600 hover:underline dark:text-blue-400"
+                className="font-mono text-[10px] text-[#8E1616] hover:underline uppercase font-bold"
               >
-                Matrix view
+                Matrix ➔
               </button>
             </div>
 
-            {recommenderStats.length === 0 ? (
-              <p className="text-xs text-slate-400 py-2">No recommenders added yet.</p>
+            {letterRequests.length === 0 ? (
+              <p className="text-xs font-serif italic text-[#000000]/50 py-2">
+                No recommendation requests tracked yet. Add recommenders under the Recommenders tab.
+              </p>
             ) : (
-              <div className="space-y-3">
-                {recommenderStats.map(({ contact, submitted, total }) => {
-                  const pct = total === 0 ? 0 : Math.round((submitted / total) * 100);
-                  return (
-                    <div key={contact.id} className="text-xs space-y-1">
-                      <div className="flex justify-between">
-                        <span className="font-medium text-slate-800 dark:text-slate-200">
-                          {contact.name}
-                        </span>
-                        <span className="font-mono text-slate-500 text-[11px]">
-                          {submitted} of {total} submitted ({pct}%)
-                        </span>
+              <div className="space-y-3 font-mono text-xs">
+                {contacts
+                  .filter((c) => c.kind === 'recommender')
+                  .map((rec) => {
+                    const reqs = letterRequests.filter(
+                      (l) => l.contact_id === rec.id && !l.deleted_at,
+                    );
+                    const done = reqs.filter((l) =>
+                      ['submitted', 'confirmed_received'].includes(l.status),
+                    ).length;
+                    return (
+                      <div key={rec.id} className="border-b border-[#000000]/10 pb-2">
+                        <div className="flex justify-between font-bold">
+                          <span className="font-serif text-[#000000]">{rec.name}</span>
+                          <span className="text-[#8E1616]">
+                            {done} / {reqs.length} submitted
+                          </span>
+                        </div>
+                        <div className="text-[10px] text-[#000000]/50">{rec.title}</div>
                       </div>
-                      <ProgressBar value={pct} size="sm" showLabel={false} />
-                    </div>
-                  );
-                })}
+                    );
+                  })}
               </div>
             )}
-          </div>
-
-          {/* Fees Breakdown */}
-          <div className="rounded-xl border border-slate-200 bg-white p-4 shadow-xs dark:border-slate-800 dark:bg-slate-900 space-y-2">
-            <div className="flex items-center gap-2">
-              <DollarSign className="h-4 w-4 text-emerald-600" />
-              <h4 className="text-xs font-semibold text-slate-900 dark:text-slate-100">
-                Application Fees
-              </h4>
-            </div>
-            <div className="grid grid-cols-3 gap-2 pt-2 text-center">
-              <div className="rounded-lg bg-slate-50 p-2 dark:bg-slate-800">
-                <p className="text-[10px] text-slate-400">Planned</p>
-                <p className="font-mono text-xs font-bold text-slate-800 dark:text-slate-200">
-                  ${feesSummary.planned}
-                </p>
-              </div>
-              <div className="rounded-lg bg-emerald-50 p-2 dark:bg-emerald-950/60">
-                <p className="text-[10px] text-emerald-700 dark:text-emerald-400">Paid</p>
-                <p className="font-mono text-xs font-bold text-emerald-700 dark:text-emerald-300">
-                  ${feesSummary.paid}
-                </p>
-              </div>
-              <div className="rounded-lg bg-blue-50 p-2 dark:bg-blue-950/60">
-                <p className="text-[10px] text-blue-700 dark:text-blue-400">Waived</p>
-                <p className="font-mono text-xs font-bold text-blue-700 dark:text-blue-300">
-                  ${feesSummary.waived}
-                </p>
-              </div>
-            </div>
           </div>
         </div>
       </div>

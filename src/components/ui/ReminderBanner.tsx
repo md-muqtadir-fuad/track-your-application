@@ -87,13 +87,13 @@ export const ReminderBanner: React.FC = () => {
   };
 
   return (
-    <div className="bg-blue-600 px-4 py-2 text-xs text-white shadow-sm flex items-center justify-between gap-3">
+    <div className="bg-[#8E1616] px-4 py-2 text-xs text-[#F8EEDF] border-b border-[#000000]/20 flex items-center justify-between gap-3 font-mono">
       <div className="flex items-center gap-2">
-        <BellRing className="h-4 w-4 animate-pulse shrink-0" />
-        <span className="font-semibold">Reminder:</span>
-        <span>
+        <BellRing className="h-4 w-4 text-[#E8C999] animate-pulse shrink-0" />
+        <span className="font-bold tracking-wider uppercase text-[#E8C999]">NOTICE:</span>
+        <span className="font-sans text-xs">
           {current.title} is due in{' '}
-          <strong className="underline">
+          <strong className="underline text-[#E8C999]">
             {current.daysRemaining <= 0 ? 'today / overdue' : `${current.daysRemaining} days`}
           </strong>{' '}
           ({current.dueLocal.replace('T', ' ')}).
@@ -104,28 +104,28 @@ export const ReminderBanner: React.FC = () => {
         <button
           type="button"
           onClick={() => handleSnooze(1)}
-          className="rounded bg-blue-700 hover:bg-blue-800 px-2 py-0.5 text-[11px] font-medium"
+          className="border border-[#F8EEDF]/30 bg-[#6d1010] hover:bg-[#000000] text-[#F8EEDF] px-2 py-0.5 text-[10px] font-mono"
         >
           Snooze 1d
         </button>
         <button
           type="button"
           onClick={() => handleSnooze(3)}
-          className="rounded bg-blue-700 hover:bg-blue-800 px-2 py-0.5 text-[11px] font-medium"
+          className="border border-[#F8EEDF]/30 bg-[#6d1010] hover:bg-[#000000] text-[#F8EEDF] px-2 py-0.5 text-[10px] font-mono"
         >
           Snooze 3d
         </button>
         <button
           type="button"
           onClick={handleAcknowledge}
-          className="rounded bg-white/20 hover:bg-white/30 px-2 py-0.5 text-[11px] font-medium"
+          className="border border-[#E8C999] bg-[#E8C999] text-[#000000] hover:bg-white px-2 py-0.5 text-[10px] font-bold font-mono"
         >
-          Dismiss
+          Acknowledge
         </button>
         <button
           type="button"
           onClick={() => setIsDismissed(true)}
-          className="p-1 hover:bg-blue-700 rounded"
+          className="p-1 hover:bg-[#6d1010] text-[#F8EEDF]"
           aria-label="Close reminder bar"
         >
           <X className="h-3.5 w-3.5" />

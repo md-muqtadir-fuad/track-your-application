@@ -6,7 +6,7 @@ import {
   Users,
   Award,
   Clock,
-  Sparkles,
+  CheckCheck,
   XCircle,
   MinusCircle,
   Ban,
@@ -25,73 +25,73 @@ const STATUS_CONFIG: Record<
   { label: string; bg: string; text: string; border: string; icon: typeof Compass }
 > = {
   Exploring: {
-    label: 'Exploring',
-    bg: 'bg-slate-100 dark:bg-slate-800',
-    text: 'text-slate-700 dark:text-slate-300',
-    border: 'border-slate-300 dark:border-slate-700',
+    label: 'EXPLORING',
+    bg: 'bg-[#E8C999]/30',
+    text: 'text-[#000000]',
+    border: 'border-[#E8C999]',
     icon: Compass,
   },
   Applying: {
-    label: 'Applying',
-    bg: 'bg-blue-50 dark:bg-blue-950/60',
-    text: 'text-blue-700 dark:text-blue-300',
-    border: 'border-blue-200 dark:border-blue-800',
+    label: 'DRAFTING',
+    bg: 'bg-[#F8EEDF]',
+    text: 'text-[#8E1616]',
+    border: 'border-[#8E1616]',
     icon: Pencil,
   },
   Submitted: {
-    label: 'Submitted',
-    bg: 'bg-indigo-50 dark:bg-indigo-950/60',
-    text: 'text-indigo-700 dark:text-indigo-300',
-    border: 'border-indigo-200 dark:border-indigo-800',
+    label: 'SUBMITTED',
+    bg: 'bg-[#8E1616]',
+    text: 'text-[#F8EEDF]',
+    border: 'border-[#8E1616]',
     icon: CheckCircle2,
   },
   Interviewing: {
-    label: 'Interviewing',
-    bg: 'bg-amber-50 dark:bg-amber-950/60',
-    text: 'text-amber-800 dark:text-amber-300',
-    border: 'border-amber-200 dark:border-amber-800',
+    label: 'INTERVIEW',
+    bg: 'bg-[#E8C999]',
+    text: 'text-[#000000]',
+    border: 'border-[#8E1616]',
     icon: Users,
   },
   Admitted: {
-    label: 'Admitted',
-    bg: 'bg-emerald-50 dark:bg-emerald-950/60',
-    text: 'text-emerald-800 dark:text-emerald-300',
-    border: 'border-emerald-200 dark:border-emerald-800',
+    label: 'ADMITTED',
+    bg: 'bg-[#8E1616]',
+    text: 'text-[#E8C999]',
+    border: 'border-[#E8C999]',
     icon: Award,
   },
   Waitlisted: {
-    label: 'Waitlisted',
-    bg: 'bg-cyan-50 dark:bg-cyan-950/60',
-    text: 'text-cyan-800 dark:text-cyan-300',
-    border: 'border-cyan-200 dark:border-cyan-800',
+    label: 'WAITLIST',
+    bg: 'bg-[#F8EEDF]',
+    text: 'text-[#000000]',
+    border: 'border-[#E8C999]',
     icon: Clock,
   },
   Accepted: {
-    label: 'Accepted',
-    bg: 'bg-green-50 dark:bg-green-950/60',
-    text: 'text-green-800 dark:text-green-300',
-    border: 'border-green-200 dark:border-green-800',
-    icon: Sparkles,
+    label: 'ACCEPTED',
+    bg: 'bg-[#000000]',
+    text: 'text-[#E8C999]',
+    border: 'border-[#8E1616]',
+    icon: CheckCheck,
   },
   Declined: {
-    label: 'Declined',
-    bg: 'bg-rose-50 dark:bg-rose-950/60',
-    text: 'text-rose-800 dark:text-rose-300',
-    border: 'border-rose-200 dark:border-rose-800',
+    label: 'DECLINED',
+    bg: 'bg-[#F8EEDF]',
+    text: 'text-[#8E1616]/80',
+    border: 'border-[#000000]/20',
     icon: XCircle,
   },
   Withdrawn: {
-    label: 'Withdrawn',
-    bg: 'bg-slate-100 dark:bg-slate-800',
-    text: 'text-slate-600 dark:text-slate-400',
-    border: 'border-slate-200 dark:border-slate-700',
+    label: 'WITHDRAWN',
+    bg: 'bg-[#F8EEDF]',
+    text: 'text-[#000000]/60',
+    border: 'border-[#000000]/20',
     icon: MinusCircle,
   },
   Rejected: {
-    label: 'Rejected',
-    bg: 'bg-gray-100 dark:bg-gray-800',
-    text: 'text-gray-700 dark:text-gray-400',
-    border: 'border-gray-200 dark:border-gray-700',
+    label: 'REJECTED',
+    bg: 'bg-[#F8EEDF]',
+    text: 'text-[#000000]/70',
+    border: 'border-[#000000]/30',
     icon: Ban,
   },
 };
@@ -121,11 +121,11 @@ export const StatusBadge: React.FC<StatusBadgeProps> = ({
             }
           : undefined
       }
-      className={`inline-flex items-center gap-1.5 rounded-full border font-medium ${config.bg} ${config.text} ${config.border} ${
-        size === 'sm' ? 'px-2 py-0.5 text-xs' : 'px-2.5 py-1 text-xs'
+      className={`inline-flex items-center gap-1.5 rounded-none border font-mono tracking-wider font-semibold ${config.bg} ${config.text} ${config.border} ${
+        size === 'sm' ? 'px-2 py-0.5 text-[10px]' : 'px-2.5 py-1 text-[11px]'
       } ${
         isInteractive
-          ? 'cursor-pointer transition-opacity hover:opacity-80 focus:outline-none focus:ring-2 focus:ring-blue-500'
+          ? 'cursor-pointer transition-opacity hover:opacity-85 focus:outline-none focus:ring-1 focus:ring-[#8E1616]'
           : ''
       } ${className}`}
     >

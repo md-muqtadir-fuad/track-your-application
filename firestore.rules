@@ -1,0 +1,130 @@
+rules_version = '2';
+
+// ===============================================================
+// Assumed Data Model
+// ===============================================================
+//
+// This security rules file governs the doctoral candidate application tracker:
+//
+// Collection: /users/{userId}/sync
+// Document: /users/{userId}/sync/database
+// Fields:
+//   - snapshot: string (required) - Base64-encoded SQLite database snapshot
+//   - updated_at: string (required) - ISO 8601 UTC timestamp of last synchronization
+//
+// Collection: /users/{userId}/applications
+// Document ID: Application UUID
+// Fields:
+//   - id: string (required)
+//   - university_id: string (required)
+//   - program: string (required)
+//   - degree: string (optional)
+//   - status: string (required)
+//   - priority: int (optional)
+//   - updated_at: string (required)
+//
+// Collection: /users/{userId}/universities
+// Document ID: University UUID
+// Fields:
+//   - id: string (required)
+//   - name: string (required)
+//   - tz: string (required) - IANA time zone
+//   - updated_at: string (required)
+//
+// Collection: /users/{userId}/contacts
+// Document ID: Contact UUID
+// Fields:
+//   - id: string (required)
+//   - name: string (required)
+//   - kind: string (required)
+//   - updated_at: string (required)
+//
+// Collection: /users/{userId}/milestones
+// Document ID: Milestone UUID
+// Fields:
+//   - id: string (required)
+//   - application_id: string (required)
+//   - kind: string (required)
+//   - due_local: string (required)
+//   - tz: string (required)
+//   - updated_at: string (required)
+//
+// Collection: /users/{userId}/checklist_items
+// Document ID: Checklist Item UUID
+// Fields:
+//   - id: string (required)
+//   - application_id: string (required)
+//   - kind: string (required)
+//   - label: string (required)
+//   - status: string (required)
+//   - updated_at: string (required)
+//
+// ===============================================================
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Helper functions
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    function isOwner(userId) {
+      return isAuthenticated() && request.auth.uid == userId;
+    }
+
+    // Validation functions
+    function isValidSyncDatabase(data) {
+      return data.snapshot is string
+        && data.snapshot.size() > 0
+        && data.updated_at is string;
+    }
+
+    // Default deny for all unspecified top-level collections
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // User-partitioned storage: each candidate has isolated access to their own dossier
+    match /users/{userId} {
+      allow read, write: if isOwner(userId);
+
+      // Binary SQLite database snapshot store
+      match /sync/database {
+        allow read: if isOwner(userId);
+        allow create, update: if isOwner(userId) && isValidSyncDatabase(request.resource.data);
+        allow delete: if isOwner(userId);
+      }
+
+      // Application entities mirror
+      match /applications/{applicationId} {
+        allow read, write: if isOwner(userId);
+      }
+
+      // University entities mirror
+      match /universities/{universityId} {
+        allow read, write: if isOwner(userId);
+      }
+
+      // Contact & Faculty entities mirror
+      match /contacts/{contactId} {
+        allow read, write: if isOwner(userId);
+      }
+
+      // Deadline & Milestone entities mirror
+      match /milestones/{milestoneId} {
+        allow read, write: if isOwner(userId);
+      }
+
+      // Checklist item entities mirror
+      match /checklist_items/{itemId} {
+        allow read, write: if isOwner(userId);
+      }
+
+      // Catch-all subcollections for future user entities
+      match /{allSubcollections=**} {
+        allow read, write: if isOwner(userId);
+      }
+    }
+  }
+}

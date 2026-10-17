@@ -15,36 +15,25 @@ export const ProgressBar: React.FC<ProgressBarProps> = ({
 }) => {
   const clamped = Math.max(0, Math.min(100, Math.round(value)));
 
-  const getColor = (pct: number) => {
-    if (pct >= 100) return 'bg-emerald-500 dark:bg-emerald-400';
-    if (pct >= 80) return 'bg-blue-600 dark:bg-blue-500';
-    if (pct >= 50) return 'bg-amber-500 dark:bg-amber-400';
-    return 'bg-rose-500 dark:bg-rose-400';
-  };
-
   return (
     <div className={`w-full ${className}`}>
-      <div className="flex items-center justify-between text-xs">
-        {showLabel && (
-          <>
-            <span className="text-slate-500 dark:text-slate-400">Readiness</span>
-            <span className="font-mono font-semibold text-slate-700 dark:text-slate-300">
-              {clamped}%
-            </span>
-          </>
-        )}
-      </div>
+      {showLabel && (
+        <div className="flex items-center justify-between text-xs mb-1">
+          <span className="font-serif italic text-[#000000]/70">Readiness Index</span>
+          <span className="font-mono font-bold text-[#8E1616]">{clamped}%</span>
+        </div>
+      )}
       <div
         role="progressbar"
         aria-valuenow={clamped}
         aria-valuemin={0}
         aria-valuemax={100}
-        className={`w-full overflow-hidden rounded-full bg-slate-200 dark:bg-slate-700 ${
-          size === 'sm' ? 'h-1.5' : 'h-2'
+        className={`w-full overflow-hidden border border-[#000000]/30 bg-[#F8EEDF] ${
+          size === 'sm' ? 'h-2' : 'h-3'
         }`}
       >
         <div
-          className={`h-full transition-all duration-300 ${getColor(clamped)}`}
+          className="h-full bg-[#8E1616] transition-all duration-300"
           style={{ width: `${clamped}%` }}
         />
       </div>

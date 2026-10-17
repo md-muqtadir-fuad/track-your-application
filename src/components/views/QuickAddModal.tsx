@@ -114,16 +114,14 @@ export const QuickAddModal: React.FC<QuickAddModalProps> = ({ isOpen, onClose, o
     >
       <form onSubmit={handleSubmit} className="space-y-4">
         {error && (
-          <div className="rounded-md bg-rose-50 p-3 text-xs text-rose-800 dark:bg-rose-950/60 dark:text-rose-300">
+          <div className="border border-[#8E1616] bg-[#F8EEDF] p-3 text-xs text-[#8E1616] font-mono">
             {error}
           </div>
         )}
 
         {/* University Name & Autocomplete */}
         <div className="relative">
-          <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300">
-            University *
-          </label>
+          <label className="block text-xs font-semibold text-[#000000]">University *</label>
           <input
             type="text"
             required
@@ -133,21 +131,21 @@ export const QuickAddModal: React.FC<QuickAddModalProps> = ({ isOpen, onClose, o
               setUniversityInput(e.target.value);
               setSelectedUniId(null);
             }}
-            className="mt-1 block w-full rounded-md border border-slate-300 px-3 py-2 text-sm text-slate-900 shadow-xs focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100"
+            className="mt-1 block w-full rounded-none border border-[#000000]/25 bg-[#F8EEDF] px-3 py-2 text-xs font-mono text-[#000000] focus:border-[#8E1616] focus:outline-none"
           />
 
           {/* Autocomplete dropdown */}
           {!selectedUniId && universityInput && matchingUnis.length > 0 && (
-            <div className="absolute z-10 mt-1 max-h-40 w-full overflow-auto rounded-md border border-slate-200 bg-white py-1 shadow-lg dark:border-slate-700 dark:bg-slate-800">
+            <div className="absolute z-10 mt-1 max-h-40 w-full overflow-auto rounded-none border border-[#000000]/30 bg-[#F8EEDF] py-1 shadow-lg">
               {matchingUnis.map((u) => (
                 <button
                   key={u.id}
                   type="button"
                   onClick={() => handleSelectUni(u)}
-                  className="flex w-full items-center justify-between px-3 py-1.5 text-left text-xs hover:bg-slate-100 dark:hover:bg-slate-700"
+                  className="flex w-full items-center justify-between px-3 py-1.5 text-left text-xs hover:bg-[#E8C999]/40 text-[#000000]"
                 >
-                  <span className="font-medium text-slate-800 dark:text-slate-200">{u.name}</span>
-                  <span className="text-[10px] text-slate-400">{u.tz}</span>
+                  <span className="font-serif font-bold text-[#000000]">{u.name}</span>
+                  <span className="text-[10px] text-[#000000]/60 font-mono">{u.tz}</span>
                 </button>
               ))}
             </div>
@@ -156,17 +154,17 @@ export const QuickAddModal: React.FC<QuickAddModalProps> = ({ isOpen, onClose, o
 
         {/* Time Zone picker for new university */}
         {isNewUniversity && (
-          <div className="rounded-md border border-blue-100 bg-blue-50/50 p-3 dark:border-blue-900 dark:bg-blue-950/30">
-            <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300">
+          <div className="rounded-none border border-[#E8C999] bg-[#E8C999]/20 p-3">
+            <label className="block text-xs font-semibold text-[#8E1616]">
               Institution Time Zone *
             </label>
-            <p className="mt-0.5 text-[11px] text-slate-500 dark:text-slate-400">
+            <p className="mt-0.5 text-[11px] text-[#000000]/70 font-serif">
               Deadlines are locked to the school's local wall-clock zone.
             </p>
             <select
               value={newUniTz}
               onChange={(e) => setNewUniTz(e.target.value)}
-              className="mt-2 block w-full rounded-md border border-slate-300 bg-white px-3 py-1.5 text-xs text-slate-900 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100"
+              className="mt-2 block w-full border border-[#000000]/25 bg-[#F8EEDF] px-3 py-1.5 text-xs font-mono text-[#000000] focus:border-[#8E1616] focus:outline-none"
             >
               <optgroup label="Pinned US Time Zones">
                 {PINNED_US_TIMEZONES.map((tz) => (
@@ -188,29 +186,25 @@ export const QuickAddModal: React.FC<QuickAddModalProps> = ({ isOpen, onClose, o
 
         {/* Program Name */}
         <div>
-          <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300">
-            Program *
-          </label>
+          <label className="block text-xs font-semibold text-[#000000]">Program *</label>
           <input
             type="text"
             required
             placeholder="e.g. PhD in Textile Engineering, PhD in Computer Science..."
             value={program}
             onChange={(e) => setProgram(e.target.value)}
-            className="mt-1 block w-full rounded-md border border-slate-300 px-3 py-2 text-sm text-slate-900 shadow-xs focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100"
+            className="mt-1 block w-full border border-[#000000]/25 bg-[#F8EEDF] px-3 py-2 text-xs font-mono text-[#000000] focus:border-[#8E1616] focus:outline-none"
           />
         </div>
 
         {/* Degree & Term */}
         <div className="grid grid-cols-2 gap-4">
           <div>
-            <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300">
-              Degree
-            </label>
+            <label className="block text-xs font-semibold text-[#000000]">Degree</label>
             <select
               value={degree}
               onChange={(e) => setDegree(e.target.value as 'phd' | 'ms' | 'other')}
-              className="mt-1 block w-full rounded-md border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100"
+              className="mt-1 block w-full border border-[#000000]/25 bg-[#F8EEDF] px-3 py-2 text-xs font-mono text-[#000000] focus:border-[#8E1616] focus:outline-none"
             >
               <option value="phd">PhD</option>
               <option value="ms">MS / Master's</option>
@@ -218,15 +212,13 @@ export const QuickAddModal: React.FC<QuickAddModalProps> = ({ isOpen, onClose, o
             </select>
           </div>
           <div>
-            <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300">
-              Term
-            </label>
+            <label className="block text-xs font-semibold text-[#000000]">Term</label>
             <input
               type="text"
               placeholder="e.g. Fall 2027"
               value={term}
               onChange={(e) => setTerm(e.target.value)}
-              className="mt-1 block w-full rounded-md border border-slate-300 px-3 py-2 text-sm text-slate-900 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100"
+              className="mt-1 block w-full border border-[#000000]/25 bg-[#F8EEDF] px-3 py-2 text-xs font-mono text-[#000000] focus:border-[#8E1616] focus:outline-none"
             />
           </div>
         </div>
@@ -234,19 +226,17 @@ export const QuickAddModal: React.FC<QuickAddModalProps> = ({ isOpen, onClose, o
         {/* Deadline Date & Time */}
         <div className="grid grid-cols-2 gap-4">
           <div>
-            <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300">
-              Deadline Date *
-            </label>
+            <label className="block text-xs font-semibold text-[#000000]">Deadline Date *</label>
             <input
               type="date"
               required
               value={deadlineDate}
               onChange={(e) => setDeadlineDate(e.target.value)}
-              className="mt-1 block w-full rounded-md border border-slate-300 px-3 py-2 text-sm text-slate-900 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100 font-mono"
+              className="mt-1 block w-full border border-[#000000]/25 bg-[#F8EEDF] px-3 py-2 text-xs text-[#000000] font-mono focus:border-[#8E1616] focus:outline-none"
             />
           </div>
           <div>
-            <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300">
+            <label className="block text-xs font-semibold text-[#000000]">
               School Time (optional)
             </label>
             <input
@@ -254,18 +244,18 @@ export const QuickAddModal: React.FC<QuickAddModalProps> = ({ isOpen, onClose, o
               value={deadlineTime}
               onChange={(e) => setDeadlineTime(e.target.value)}
               placeholder="23:59"
-              className="mt-1 block w-full rounded-md border border-slate-300 px-3 py-2 text-sm text-slate-900 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100 font-mono"
+              className="mt-1 block w-full border border-[#000000]/25 bg-[#F8EEDF] px-3 py-2 text-xs text-[#000000] font-mono focus:border-[#8E1616] focus:outline-none"
             />
-            <span className="text-[10px] text-slate-400">Defaults to 23:59 if blank.</span>
+            <span className="text-[10px] font-mono text-[#000000]/50">
+              Defaults to 23:59 if blank.
+            </span>
           </div>
         </div>
 
         {/* Priority */}
         <div>
-          <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300">
-            Priority
-          </label>
-          <div className="mt-1 flex gap-4 text-xs">
+          <label className="block text-xs font-semibold text-[#000000]">Priority</label>
+          <div className="mt-1 flex gap-4 text-xs font-mono">
             {[
               { val: 1, label: 'High (Tier 1)' },
               { val: 2, label: 'Medium (Tier 2)' },
@@ -277,7 +267,7 @@ export const QuickAddModal: React.FC<QuickAddModalProps> = ({ isOpen, onClose, o
                   name="priority"
                   checked={priority === p.val}
                   onChange={() => setPriority(p.val as 1 | 2 | 3)}
-                  className="text-blue-600 focus:ring-blue-500"
+                  className="accent-[#8E1616]"
                 />
                 <span>{p.label}</span>
               </label>
@@ -286,20 +276,20 @@ export const QuickAddModal: React.FC<QuickAddModalProps> = ({ isOpen, onClose, o
         </div>
 
         {/* Submit Actions */}
-        <div className="mt-6 flex justify-end gap-3 border-t border-slate-200 pt-4 dark:border-slate-800">
+        <div className="mt-6 flex justify-end gap-3 border-t border-[#000000]/15 pt-4">
           <button
             type="button"
             onClick={onClose}
-            className="rounded-md border border-slate-300 px-4 py-2 text-xs font-medium text-slate-700 hover:bg-slate-50 dark:border-slate-700 dark:text-slate-300 dark:hover:bg-slate-800"
+            className="border border-[#000000]/25 bg-[#F8EEDF] px-4 py-2 text-xs font-mono uppercase tracking-wider text-[#000000] hover:bg-[#E8C999]/40"
           >
             Cancel
           </button>
           <button
             type="submit"
             disabled={isSubmitting}
-            className="rounded-md bg-blue-600 px-4 py-2 text-xs font-semibold text-white shadow-xs hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50"
+            className="bg-[#8E1616] px-4 py-2 text-xs font-mono font-bold uppercase tracking-wider text-[#F8EEDF] hover:bg-[#6d1010] border border-[#8E1616] disabled:opacity-50"
           >
-            {isSubmitting ? 'Creating...' : 'Create Application'}
+            {isSubmitting ? 'Recording...' : 'Record Application'}
           </button>
         </div>
       </form>

@@ -122,17 +122,17 @@ export const CalendarView: React.FC<{
   const eventColor = (kind: string) => {
     switch (kind) {
       case 'application':
-        return 'bg-blue-100 text-blue-800 border-blue-300 dark:bg-blue-950/80 dark:text-blue-300 dark:border-blue-800';
+        return 'bg-[#8E1616] text-[#F8EEDF] border-[#8E1616]';
       case 'priority':
-        return 'bg-indigo-100 text-indigo-800 border-indigo-300 dark:bg-indigo-950/80 dark:text-indigo-300 dark:border-indigo-800';
+        return 'bg-[#E8C999] text-[#000000] border-[#000000]/40 font-bold';
       case 'fee_waiver':
-        return 'bg-amber-100 text-amber-800 border-amber-300 dark:bg-amber-950/80 dark:text-amber-300 dark:border-amber-800';
+        return 'bg-[#E8C999]/60 text-[#000000] border-[#E8C999]';
       case 'letters':
-        return 'bg-purple-100 text-purple-800 border-purple-300 dark:bg-purple-950/80 dark:text-purple-300 dark:border-purple-800';
+        return 'bg-[#000000] text-[#F8EEDF] border-[#000000]';
       case 'followup':
-        return 'bg-emerald-100 text-emerald-800 border-emerald-300 dark:bg-emerald-950/80 dark:text-emerald-300 dark:border-emerald-800';
+        return 'bg-[#F8EEDF] text-[#8E1616] border-[#8E1616] font-semibold';
       default:
-        return 'bg-slate-100 text-slate-800 border-slate-300 dark:bg-slate-800 dark:text-slate-200 dark:border-slate-700';
+        return 'bg-[#E8C999]/30 text-[#000000] border-[#000000]/20';
     }
   };
 
@@ -145,7 +145,7 @@ export const CalendarView: React.FC<{
             <button
               type="button"
               onClick={() => setCurrentMonth((m) => m.minus({ months: 1 }))}
-              className="rounded-md border border-slate-300 p-1.5 text-slate-600 hover:bg-slate-100 dark:border-slate-700 dark:text-slate-300 dark:hover:bg-slate-800"
+              className="border border-[#000000]/25 bg-[#F8EEDF] p-1.5 text-[#000000] hover:bg-[#E8C999]/40"
               aria-label="Previous month"
             >
               <ChevronLeft className="h-4 w-4" />
@@ -153,35 +153,35 @@ export const CalendarView: React.FC<{
             <button
               type="button"
               onClick={() => setCurrentMonth(DateTime.local().startOf('month'))}
-              className="rounded-md border border-slate-300 px-3 py-1.5 text-xs font-semibold text-slate-700 hover:bg-slate-100 dark:border-slate-700 dark:text-slate-200 dark:hover:bg-slate-800"
+              className="border border-[#000000]/25 bg-[#F8EEDF] px-3 py-1.5 text-xs font-mono font-bold uppercase tracking-wider text-[#000000] hover:bg-[#E8C999]/40"
             >
               Today
             </button>
             <button
               type="button"
               onClick={() => setCurrentMonth((m) => m.plus({ months: 1 }))}
-              className="rounded-md border border-slate-300 p-1.5 text-slate-600 hover:bg-slate-100 dark:border-slate-700 dark:text-slate-300 dark:hover:bg-slate-800"
+              className="border border-[#000000]/25 bg-[#F8EEDF] p-1.5 text-[#000000] hover:bg-[#E8C999]/40"
               aria-label="Next month"
             >
               <ChevronRight className="h-4 w-4" />
             </button>
           </div>
 
-          <h3 className="text-base font-bold text-slate-900 dark:text-slate-100">
+          <h3 className="font-serif text-lg font-bold text-[#000000]">
             {currentMonth.toFormat('MMMM yyyy')}
           </h3>
         </div>
 
         <div className="flex items-center gap-3">
           {/* View toggle */}
-          <div className="flex rounded-lg border border-slate-300 bg-slate-100 p-0.5 dark:border-slate-700 dark:bg-slate-800 text-xs font-medium">
+          <div className="flex border border-[#000000]/25 bg-[#F8EEDF] p-0.5 text-xs font-mono uppercase tracking-wider">
             <button
               type="button"
               onClick={() => setViewMode('month')}
-              className={`flex items-center gap-1.5 rounded-md px-3 py-1.5 transition-colors ${
+              className={`flex items-center gap-1.5 px-3 py-1.5 transition-colors ${
                 viewMode === 'month'
-                  ? 'bg-white text-slate-900 shadow-xs dark:bg-slate-900 dark:text-slate-100'
-                  : 'text-slate-600 dark:text-slate-400 hover:text-slate-900'
+                  ? 'bg-[#8E1616] text-[#F8EEDF] font-bold shadow-xs'
+                  : 'text-[#000000]/70 hover:text-[#000000]'
               }`}
             >
               <Grid className="h-3.5 w-3.5" />
@@ -190,10 +190,10 @@ export const CalendarView: React.FC<{
             <button
               type="button"
               onClick={() => setViewMode('agenda')}
-              className={`flex items-center gap-1.5 rounded-md px-3 py-1.5 transition-colors ${
+              className={`flex items-center gap-1.5 px-3 py-1.5 transition-colors ${
                 viewMode === 'agenda'
-                  ? 'bg-white text-slate-900 shadow-xs dark:bg-slate-900 dark:text-slate-100'
-                  : 'text-slate-600 dark:text-slate-400 hover:text-slate-900'
+                  ? 'bg-[#8E1616] text-[#F8EEDF] font-bold shadow-xs'
+                  : 'text-[#000000]/70 hover:text-[#000000]'
               }`}
             >
               <ListFilter className="h-3.5 w-3.5" />
@@ -204,9 +204,9 @@ export const CalendarView: React.FC<{
           <button
             type="button"
             onClick={handleExportIcs}
-            className="inline-flex items-center gap-1.5 rounded-lg border border-slate-300 bg-white px-3.5 py-1.5 text-xs font-semibold text-slate-700 shadow-xs hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200 dark:hover:bg-slate-700"
+            className="inline-flex items-center gap-1.5 border border-[#000000]/25 bg-[#F8EEDF] px-3.5 py-1.5 text-xs font-mono font-bold uppercase tracking-wider text-[#000000] hover:bg-[#E8C999]/40"
           >
-            <Download className="h-3.5 w-3.5" />
+            <Download className="h-3.5 w-3.5 text-[#8E1616]" />
             Export .ics Calendar
           </button>
         </div>
@@ -214,9 +214,9 @@ export const CalendarView: React.FC<{
 
       {/* Month View Grid */}
       {viewMode === 'month' && (
-        <div className="overflow-hidden rounded-xl border border-slate-200 bg-white shadow-xs dark:border-slate-800 dark:bg-slate-900">
+        <div className="overflow-hidden border border-[#000000]/25 bg-white shadow-xs">
           {/* Day of week headers */}
-          <div className="grid grid-cols-7 border-b border-slate-200 bg-slate-50 text-center text-xs font-semibold text-slate-600 dark:border-slate-800 dark:bg-slate-800/60 dark:text-slate-300">
+          <div className="grid grid-cols-7 border-b-2 border-[#000000] bg-[#E8C999]/35 text-center text-xs font-serif font-bold text-[#000000]">
             {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map((d) => (
               <div key={d} className="py-2.5">
                 {d}
@@ -225,13 +225,10 @@ export const CalendarView: React.FC<{
           </div>
 
           {/* Days Grid */}
-          <div className="grid grid-cols-7 divide-x divide-y divide-slate-100 dark:divide-slate-800">
+          <div className="grid grid-cols-7 divide-x divide-y divide-[#000000]/15 bg-white">
             {/* Leading empty cells */}
             {Array.from({ length: firstDayOfWeek }).map((_, i) => (
-              <div
-                key={`empty-${i}`}
-                className="min-h-[105px] bg-slate-50/40 dark:bg-slate-950/20"
-              />
+              <div key={`empty-${i}`} className="min-h-[105px] bg-[#F8EEDF]/40" />
             ))}
 
             {/* Month days */}
@@ -245,21 +242,19 @@ export const CalendarView: React.FC<{
                 <div
                   key={dateStr}
                   className={`min-h-[105px] p-2 transition-colors ${
-                    isToday ? 'bg-blue-50/30 dark:bg-blue-950/20' : ''
+                    isToday ? 'bg-[#E8C999]/30' : 'bg-white hover:bg-[#E8C999]/15'
                   }`}
                 >
                   <div className="flex items-center justify-between mb-1.5">
                     <span
                       className={`font-mono text-xs font-semibold ${
-                        isToday
-                          ? 'rounded-full bg-blue-600 px-1.5 py-0.5 text-white'
-                          : 'text-slate-700 dark:text-slate-300'
+                        isToday ? 'bg-[#8E1616] px-1.5 py-0.5 text-[#F8EEDF]' : 'text-[#000000]'
                       }`}
                     >
                       {dayNum}
                     </span>
                     {dayEvents.length > 0 && (
-                      <span className="font-mono text-[10px] text-slate-400">
+                      <span className="font-mono text-[10px] text-[#000000]/50 font-bold">
                         {dayEvents.length}
                       </span>
                     )}
@@ -275,7 +270,7 @@ export const CalendarView: React.FC<{
                             onSelectApplication(evt.applicationId);
                           }
                         }}
-                        className={`truncate rounded border px-1.5 py-0.5 text-[10px] font-medium leading-tight cursor-pointer ${eventColor(
+                        className={`truncate border px-1.5 py-0.5 text-[10px] font-mono leading-tight cursor-pointer ${eventColor(
                           evt.kind,
                         )}`}
                       >
@@ -292,9 +287,9 @@ export const CalendarView: React.FC<{
 
       {/* Agenda / List View */}
       {viewMode === 'agenda' && (
-        <div className="rounded-xl border border-slate-200 bg-white shadow-xs dark:border-slate-800 dark:bg-slate-900 divide-y divide-slate-100 dark:divide-slate-800">
+        <div className="border border-[#000000]/25 bg-white shadow-xs divide-y divide-[#000000]/10">
           {calendarEvents.length === 0 ? (
-            <div className="p-8 text-center text-xs text-slate-400">
+            <div className="p-8 text-center text-xs font-serif italic text-[#000000]/50">
               No dated events or deadlines found.
             </div>
           ) : (
@@ -308,33 +303,33 @@ export const CalendarView: React.FC<{
                       onSelectApplication(evt.applicationId);
                     }
                   }}
-                  className={`flex items-center justify-between p-4 text-xs hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors ${
+                  className={`flex items-center justify-between p-4 text-xs hover:bg-[#E8C999]/20 transition-colors ${
                     evt.applicationId ? 'cursor-pointer' : ''
                   }`}
                 >
                   <div className="flex items-start gap-3">
-                    <div className="rounded-lg bg-slate-100 px-2.5 py-1.5 text-center font-mono dark:bg-slate-800">
-                      <span className="block text-[10px] text-slate-400">
+                    <div className="border border-[#000000]/20 bg-[#F8EEDF] px-2.5 py-1.5 text-center font-mono">
+                      <span className="block text-[10px] text-[#000000]/60">
                         {evt.dueLocal.slice(0, 4)}
                       </span>
-                      <span className="block text-sm font-bold text-slate-800 dark:text-slate-200">
+                      <span className="block text-sm font-bold text-[#8E1616]">
                         {evt.dueLocal.slice(5, 10)}
                       </span>
                     </div>
 
                     <div>
-                      <span className="font-bold text-slate-900 dark:text-slate-100 text-sm">
+                      <span className="font-serif font-bold text-[#000000] text-sm">
                         {evt.institution}
                       </span>
-                      <p className="text-slate-600 dark:text-slate-300 mt-0.5">{evt.title}</p>
-                      <p className="font-mono text-[11px] text-slate-400 mt-0.5">
+                      <p className="text-[#000000]/80 mt-0.5 font-mono text-xs">{evt.title}</p>
+                      <p className="font-mono text-[11px] text-[#000000]/50 mt-0.5">
                         {evt.dueLocal.replace('T', ' ')} ({evt.tz})
                       </p>
                     </div>
                   </div>
 
                   <span
-                    className={`rounded-full border px-2.5 py-1 text-xs font-semibold ${eventColor(evt.kind)}`}
+                    className={`border px-2.5 py-1 text-xs font-mono font-bold uppercase ${eventColor(evt.kind)}`}
                   >
                     {evt.kind.replace('_', ' ').toUpperCase()}
                   </span>

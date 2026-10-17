@@ -9,6 +9,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Web application transition with in-browser SQLite WebAssembly (`sql.js`) and IndexedDB snapshot persistence.
+- Firebase Authentication with Google Sign-In and Cloud Firestore synchronization.
+- Production Cloud Firestore security rules (`firestore.rules`) with isolated user dossier authorization.
+- Academic 4-color editorial design system (`#000000`, `#8E1616`, `#E8C999`, `#F8EEDF`) across all 8 views and modals.
+- Enhanced logout feedback with toast notifications and detailed cloud sync diagnostic status.
 - Design system tokens and academic styling guidelines in `docs/design.md`.
 - Full interactive UI views for all 8 screens: Dashboard with Today action items, Applications (table and Kanban board), Recommenders matrix with chase email template generator, Faculty outreach tracker, Calendar with Month and Agenda modes, Documents & scores, Offers side-by-side comparison, and Settings.
 - Global Command Palette (`Cmd/Ctrl+K`), Quick Add Modal (`Cmd/Ctrl+N`), and Keyboard Help Modal (`?`).

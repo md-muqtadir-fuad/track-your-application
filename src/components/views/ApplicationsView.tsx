@@ -193,13 +193,13 @@ export const ApplicationsView: React.FC = () => {
       <div className="flex flex-wrap items-center justify-between gap-4">
         <div className="flex items-center gap-3">
           <div className="relative">
-            <Search className="absolute left-3 top-2.5 h-4 w-4 text-slate-400" />
+            <Search className="absolute left-3 top-2.5 h-4 w-4 text-[#000000]/40" />
             <input
               type="text"
               placeholder="Search applications, schools..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="rounded-lg border border-slate-300 bg-white pl-9 pr-4 py-2 text-xs text-slate-900 shadow-xs focus:border-blue-500 focus:outline-none dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100 w-64"
+              className="rounded-none border border-[#000000]/25 bg-[#F8EEDF] pl-9 pr-4 py-2 text-xs text-[#000000] focus:border-[#8E1616] focus:outline-none focus:ring-1 focus:ring-[#8E1616] w-64"
             />
           </div>
 
@@ -207,7 +207,7 @@ export const ApplicationsView: React.FC = () => {
             <select
               value={statusFilter}
               onChange={(e) => setStatusFilter(e.target.value)}
-              className="rounded-lg border border-slate-300 bg-white px-3 py-2 text-slate-700 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200"
+              className="rounded-none border border-[#000000]/25 bg-[#F8EEDF] px-3 py-2 text-xs font-mono text-[#000000] focus:border-[#8E1616] focus:outline-none"
             >
               <option value="all">All Statuses</option>
               <option value="active">Active Only</option>
@@ -221,7 +221,7 @@ export const ApplicationsView: React.FC = () => {
             <select
               value={degreeFilter}
               onChange={(e) => setDegreeFilter(e.target.value)}
-              className="rounded-lg border border-slate-300 bg-white px-3 py-2 text-slate-700 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200"
+              className="rounded-none border border-[#000000]/25 bg-[#F8EEDF] px-3 py-2 text-xs font-mono text-[#000000] focus:border-[#8E1616] focus:outline-none"
             >
               <option value="all">All Degrees</option>
               <option value="phd">PhD</option>
@@ -232,14 +232,14 @@ export const ApplicationsView: React.FC = () => {
 
         <div className="flex items-center gap-3">
           {/* View toggle */}
-          <div className="flex rounded-lg border border-slate-300 bg-slate-100 p-0.5 dark:border-slate-700 dark:bg-slate-800">
+          <div className="flex rounded-none border border-[#000000]/25 bg-[#F8EEDF] p-0.5">
             <button
               type="button"
               onClick={() => setViewMode('table')}
-              className={`flex items-center gap-1.5 rounded-md px-3 py-1.5 text-xs font-medium transition-colors ${
+              className={`flex items-center gap-1.5 rounded-none px-3 py-1.5 text-xs font-mono uppercase tracking-wider transition-colors ${
                 viewMode === 'table'
-                  ? 'bg-white text-slate-900 shadow-xs dark:bg-slate-900 dark:text-slate-100'
-                  : 'text-slate-600 dark:text-slate-400 hover:text-slate-900'
+                  ? 'bg-[#8E1616] text-[#F8EEDF] font-bold shadow-xs'
+                  : 'text-[#000000]/70 hover:text-[#000000]'
               }`}
             >
               <LayoutList className="h-3.5 w-3.5" />
@@ -248,10 +248,10 @@ export const ApplicationsView: React.FC = () => {
             <button
               type="button"
               onClick={() => setViewMode('board')}
-              className={`flex items-center gap-1.5 rounded-md px-3 py-1.5 text-xs font-medium transition-colors ${
+              className={`flex items-center gap-1.5 rounded-none px-3 py-1.5 text-xs font-mono uppercase tracking-wider transition-colors ${
                 viewMode === 'board'
-                  ? 'bg-white text-slate-900 shadow-xs dark:bg-slate-900 dark:text-slate-100'
-                  : 'text-slate-600 dark:text-slate-400 hover:text-slate-900'
+                  ? 'bg-[#8E1616] text-[#F8EEDF] font-bold shadow-xs'
+                  : 'text-[#000000]/70 hover:text-[#000000]'
               }`}
             >
               <Kanban className="h-3.5 w-3.5" />
@@ -262,11 +262,11 @@ export const ApplicationsView: React.FC = () => {
           <button
             type="button"
             onClick={() => setIsQuickAddOpen(true)}
-            className="inline-flex items-center gap-1.5 rounded-lg bg-blue-600 px-4 py-2 text-xs font-semibold text-white shadow-xs hover:bg-blue-700 transition-colors"
+            className="inline-flex items-center gap-1.5 rounded-none bg-[#8E1616] px-4 py-2 text-xs font-mono font-semibold uppercase tracking-wider text-[#F8EEDF] hover:bg-[#6d1010] border border-[#8E1616] transition-colors"
           >
             <Plus className="h-4 w-4" />
             New Application
-            <kbd className="ml-1 hidden sm:inline-block rounded bg-blue-700 px-1 text-[10px] text-blue-100">
+            <kbd className="ml-1 hidden sm:inline-block rounded-none bg-[#6d1010] px-1 text-[9px] text-[#E8C999]">
               Ctrl+N
             </kbd>
           </button>
@@ -275,13 +275,13 @@ export const ApplicationsView: React.FC = () => {
 
       {/* Table View */}
       {viewMode === 'table' && (
-        <div className="overflow-hidden rounded-xl border border-slate-200 bg-white shadow-xs dark:border-slate-800 dark:bg-slate-900">
+        <div className="overflow-hidden border border-[#000000]/25 bg-white shadow-xs">
           <div className="overflow-x-auto">
-            <table className="w-full text-left text-xs text-slate-600 dark:text-slate-300">
-              <thead className="border-b border-slate-200 bg-slate-50 font-semibold text-slate-700 dark:border-slate-800 dark:bg-slate-800/60 dark:text-slate-200">
+            <table className="w-full text-left text-xs text-[#000000]">
+              <thead className="border-b-2 border-[#000000] bg-[#E8C999]/35 font-serif font-bold text-[#000000]">
                 <tr>
                   <th
-                    className="cursor-pointer px-4 py-3 hover:text-slate-900"
+                    className="cursor-pointer px-4 py-3 hover:text-[#8E1616]"
                     onClick={() => {
                       if (sortBy === 'university') setSortAsc(!sortAsc);
                       else {
@@ -292,11 +292,11 @@ export const ApplicationsView: React.FC = () => {
                   >
                     <div className="flex items-center gap-1">
                       <span>University & Program</span>
-                      <ArrowUpDown className="h-3 w-3" />
+                      <ArrowUpDown className="h-3 w-3 text-[#8E1616]" />
                     </div>
                   </th>
                   <th
-                    className="cursor-pointer px-4 py-3 hover:text-slate-900"
+                    className="cursor-pointer px-4 py-3 hover:text-[#8E1616]"
                     onClick={() => {
                       if (sortBy === 'deadline') setSortAsc(!sortAsc);
                       else {
@@ -307,12 +307,12 @@ export const ApplicationsView: React.FC = () => {
                   >
                     <div className="flex items-center gap-1">
                       <span>Deadline</span>
-                      <ArrowUpDown className="h-3 w-3" />
+                      <ArrowUpDown className="h-3 w-3 text-[#8E1616]" />
                     </div>
                   </th>
                   <th className="px-4 py-3">Status</th>
                   <th
-                    className="cursor-pointer px-4 py-3 hover:text-slate-900"
+                    className="cursor-pointer px-4 py-3 hover:text-[#8E1616]"
                     onClick={() => {
                       if (sortBy === 'priority') setSortAsc(!sortAsc);
                       else {
@@ -323,11 +323,11 @@ export const ApplicationsView: React.FC = () => {
                   >
                     <div className="flex items-center gap-1">
                       <span>Priority</span>
-                      <ArrowUpDown className="h-3 w-3" />
+                      <ArrowUpDown className="h-3 w-3 text-[#8E1616]" />
                     </div>
                   </th>
                   <th
-                    className="cursor-pointer px-4 py-3 hover:text-slate-900"
+                    className="cursor-pointer px-4 py-3 hover:text-[#8E1616]"
                     onClick={() => {
                       if (sortBy === 'readiness') setSortAsc(!sortAsc);
                       else {
@@ -338,16 +338,19 @@ export const ApplicationsView: React.FC = () => {
                   >
                     <div className="flex items-center gap-1">
                       <span>Readiness</span>
-                      <ArrowUpDown className="h-3 w-3" />
+                      <ArrowUpDown className="h-3 w-3 text-[#8E1616]" />
                     </div>
                   </th>
                   <th className="px-4 py-3 text-right">Actions</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
+              <tbody className="divide-y divide-[#000000]/10 bg-white">
                 {sortedApps.length === 0 ? (
                   <tr>
-                    <td colSpan={6} className="py-12 text-center text-slate-400">
+                    <td
+                      colSpan={6}
+                      className="py-12 text-center font-serif italic text-[#000000]/50"
+                    >
                       No applications found matching your criteria.
                     </td>
                   </tr>
@@ -361,13 +364,13 @@ export const ApplicationsView: React.FC = () => {
                       <tr
                         key={app.id}
                         onClick={() => setSelectedAppId(app.id)}
-                        className="cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors"
+                        className="cursor-pointer hover:bg-[#E8C999]/20 transition-colors"
                       >
                         <td className="px-4 py-3">
-                          <p className="font-semibold text-slate-900 dark:text-slate-100">
+                          <p className="font-serif font-bold text-sm text-[#000000]">
                             {uni ? uni.name : 'Unknown University'}
                           </p>
-                          <p className="text-[11px] text-slate-500">
+                          <p className="text-[11px] font-mono text-[#000000]/70">
                             {app.program} • {app.term} ({app.degree.toUpperCase()})
                           </p>
                         </td>
@@ -382,7 +385,7 @@ export const ApplicationsView: React.FC = () => {
                               compact
                             />
                           ) : (
-                            <span className="text-slate-400">No date</span>
+                            <span className="font-mono text-[#000000]/40">No date</span>
                           )}
                         </td>
 
@@ -392,7 +395,7 @@ export const ApplicationsView: React.FC = () => {
                             onChange={(e) =>
                               handleStatusChange(app, e.target.value as ApplicationStatus)
                             }
-                            className="rounded border border-slate-300 bg-white px-2 py-1 text-xs dark:border-slate-700 dark:bg-slate-800"
+                            className="rounded-none border border-[#000000]/25 bg-[#F8EEDF] px-2 py-1 text-xs font-mono text-[#000000] focus:border-[#8E1616] focus:outline-none"
                           >
                             {activeColumns.concat(terminalStatuses).map((s) => (
                               <option key={s} value={s}>
@@ -408,7 +411,7 @@ export const ApplicationsView: React.FC = () => {
                             onChange={(e) =>
                               handlePriorityChange(app, parseInt(e.target.value, 10) as 1 | 2 | 3)
                             }
-                            className="rounded border border-slate-300 bg-white px-2 py-1 text-xs dark:border-slate-700 dark:bg-slate-800 font-medium"
+                            className="rounded-none border border-[#000000]/25 bg-[#F8EEDF] px-2 py-1 text-xs font-mono font-medium text-[#000000] focus:border-[#8E1616] focus:outline-none"
                           >
                             <option value={1}>Tier 1 (High)</option>
                             <option value={2}>Tier 2 (Mid)</option>
@@ -424,7 +427,7 @@ export const ApplicationsView: React.FC = () => {
                           <button
                             type="button"
                             onClick={() => handleDelete(app)}
-                            className="rounded p-1 text-slate-400 hover:text-rose-600 hover:bg-slate-100 dark:hover:bg-slate-800"
+                            className="rounded-none p-1 text-[#000000]/40 hover:text-[#8E1616] hover:bg-[#8E1616]/10"
                             aria-label={`Delete ${app.program}`}
                           >
                             <Trash2 className="h-4 w-4" />
@@ -449,11 +452,11 @@ export const ApplicationsView: React.FC = () => {
               return (
                 <div
                   key={col}
-                  className="flex flex-col rounded-xl border border-slate-200 bg-slate-50/60 p-3 dark:border-slate-800 dark:bg-slate-900/40 min-h-[450px]"
+                  className="flex flex-col border border-[#000000]/20 bg-[#F8EEDF] p-3 min-h-[450px]"
                 >
-                  <div className="mb-3 flex items-center justify-between">
+                  <div className="mb-3 flex items-center justify-between border-b border-[#000000]/15 pb-2">
                     <StatusBadge status={col} size="sm" />
-                    <span className="font-mono text-xs font-semibold text-slate-400">
+                    <span className="font-mono text-xs font-bold text-[#8E1616]">
                       {colApps.length}
                     </span>
                   </div>
@@ -468,12 +471,10 @@ export const ApplicationsView: React.FC = () => {
                         <div
                           key={app.id}
                           onClick={() => setSelectedAppId(app.id)}
-                          className="cursor-pointer rounded-lg border border-slate-200 bg-white p-3 shadow-xs hover:border-blue-400 hover:shadow-md transition-all dark:border-slate-800 dark:bg-slate-850 dark:hover:border-blue-600"
+                          className="cursor-pointer border border-[#000000]/20 bg-white p-3 shadow-xs hover:border-[#8E1616] hover:bg-[#E8C999]/15 transition-all text-[#000000]"
                         >
-                          <p className="font-bold text-xs text-slate-900 dark:text-slate-100">
-                            {uni?.name}
-                          </p>
-                          <p className="text-[11px] text-slate-500 mt-0.5 line-clamp-1">
+                          <p className="font-serif font-bold text-xs text-[#000000]">{uni?.name}</p>
+                          <p className="text-[11px] font-mono text-[#000000]/70 mt-0.5 line-clamp-1">
                             {app.program}
                           </p>
 
@@ -493,7 +494,7 @@ export const ApplicationsView: React.FC = () => {
                             <ProgressBar value={readiness} size="sm" />
                           </div>
 
-                          <div className="mt-3 flex items-center justify-between border-t border-slate-100 pt-2 text-[10px] text-slate-400 dark:border-slate-800">
+                          <div className="mt-3 flex items-center justify-between border-t border-[#000000]/10 pt-2 text-[10px] font-mono text-[#000000]/60">
                             <span>Priority T{app.priority}</span>
                             <span className="capitalize">{app.degree}</span>
                           </div>
@@ -507,24 +508,24 @@ export const ApplicationsView: React.FC = () => {
           </div>
 
           {/* Collapsed Terminal Statuses */}
-          <div className="rounded-xl border border-slate-200 bg-white p-4 dark:border-slate-800 dark:bg-slate-900">
+          <div className="border border-[#000000]/20 bg-white p-4">
             <button
               type="button"
               onClick={() => setIsTerminalExpanded(!isTerminalExpanded)}
-              className="flex w-full items-center justify-between text-xs font-semibold text-slate-700 dark:text-slate-300"
+              className="flex w-full items-center justify-between text-xs font-serif font-bold text-[#000000]"
             >
               <div className="flex items-center gap-2">
                 {isTerminalExpanded ? (
-                  <ChevronDown className="h-4 w-4" />
+                  <ChevronDown className="h-4 w-4 text-[#8E1616]" />
                 ) : (
-                  <ChevronRight className="h-4 w-4" />
+                  <ChevronRight className="h-4 w-4 text-[#8E1616]" />
                 )}
                 <span>Closed / Terminal Applications</span>
-                <span className="rounded-full bg-slate-100 px-2 py-0.5 text-[10px] dark:bg-slate-800">
+                <span className="border border-[#000000]/20 bg-[#F8EEDF] px-2 py-0.5 text-[10px] font-mono text-[#000000]">
                   {sortedApps.filter((a) => terminalStatuses.includes(a.status)).length}
                 </span>
               </div>
-              <span className="text-slate-400 font-normal">
+              <span className="font-mono text-[11px] text-[#000000]/50 font-normal">
                 Accepted, Declined, Withdrawn, Rejected
               </span>
             </button>
@@ -537,15 +538,17 @@ export const ApplicationsView: React.FC = () => {
                     <div
                       key={app.id}
                       onClick={() => setSelectedAppId(app.id)}
-                      className="cursor-pointer rounded-lg border border-slate-200 bg-slate-50 p-3 text-xs dark:border-slate-800 dark:bg-slate-800/40"
+                      className="cursor-pointer border border-[#000000]/20 bg-[#F8EEDF] p-3 text-xs hover:border-[#8E1616]"
                     >
                       <div className="flex justify-between items-center mb-1">
-                        <span className="font-semibold text-slate-800 dark:text-slate-200">
+                        <span className="font-serif font-bold text-[#000000]">
                           {uniMap.get(app.university_id)?.name}
                         </span>
                         <StatusBadge status={app.status} size="sm" />
                       </div>
-                      <p className="text-[11px] text-slate-500 line-clamp-1">{app.program}</p>
+                      <p className="text-[11px] font-mono text-[#000000]/60 line-clamp-1">
+                        {app.program}
+                      </p>
                     </div>
                   ))}
               </div>

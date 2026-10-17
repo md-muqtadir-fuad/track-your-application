@@ -112,14 +112,14 @@ export const DocumentsScoresView: React.FC = () => {
     <div className="space-y-6">
       {/* Tab toggle and actions */}
       <div className="flex flex-wrap items-center justify-between gap-4">
-        <div className="flex rounded-lg border border-slate-300 bg-slate-100 p-0.5 dark:border-slate-700 dark:bg-slate-800 text-xs font-medium">
+        <div className="flex border border-[#000000]/25 bg-[#F8EEDF] p-0.5 text-xs font-mono uppercase tracking-wider">
           <button
             type="button"
             onClick={() => setActiveTab('documents')}
-            className={`flex items-center gap-1.5 rounded-md px-3.5 py-1.5 transition-colors ${
+            className={`flex items-center gap-1.5 px-3.5 py-1.5 transition-colors ${
               activeTab === 'documents'
-                ? 'bg-white text-slate-900 shadow-xs dark:bg-slate-900 dark:text-slate-100'
-                : 'text-slate-600 dark:text-slate-400 hover:text-slate-900'
+                ? 'bg-[#8E1616] text-[#F8EEDF] font-bold shadow-xs'
+                : 'text-[#000000]/70 hover:text-[#000000]'
             }`}
           >
             <FileText className="h-3.5 w-3.5" />
@@ -128,10 +128,10 @@ export const DocumentsScoresView: React.FC = () => {
           <button
             type="button"
             onClick={() => setActiveTab('scores')}
-            className={`flex items-center gap-1.5 rounded-md px-3.5 py-1.5 transition-colors ${
+            className={`flex items-center gap-1.5 px-3.5 py-1.5 transition-colors ${
               activeTab === 'scores'
-                ? 'bg-white text-slate-900 shadow-xs dark:bg-slate-900 dark:text-slate-100'
-                : 'text-slate-600 dark:text-slate-400 hover:text-slate-900'
+                ? 'bg-[#8E1616] text-[#F8EEDF] font-bold shadow-xs'
+                : 'text-[#000000]/70 hover:text-[#000000]'
             }`}
           >
             <Award className="h-3.5 w-3.5" />
@@ -143,7 +143,7 @@ export const DocumentsScoresView: React.FC = () => {
           <button
             type="button"
             onClick={() => setIsAddDocOpen(true)}
-            className="inline-flex items-center gap-1.5 rounded-lg bg-blue-600 px-3.5 py-2 text-xs font-semibold text-white shadow-xs hover:bg-blue-700"
+            className="inline-flex items-center gap-1.5 rounded-none bg-[#8E1616] px-3.5 py-2 text-xs font-mono font-semibold uppercase tracking-wider text-[#F8EEDF] hover:bg-[#6d1010] border border-[#8E1616]"
           >
             <Plus className="h-4 w-4" />
             Link Document
@@ -152,7 +152,7 @@ export const DocumentsScoresView: React.FC = () => {
           <button
             type="button"
             onClick={() => setIsAddScoreOpen(true)}
-            className="inline-flex items-center gap-1.5 rounded-lg bg-blue-600 px-3.5 py-2 text-xs font-semibold text-white shadow-xs hover:bg-blue-700"
+            className="inline-flex items-center gap-1.5 rounded-none bg-[#8E1616] px-3.5 py-2 text-xs font-mono font-semibold uppercase tracking-wider text-[#F8EEDF] hover:bg-[#6d1010] border border-[#8E1616]"
           >
             <Plus className="h-4 w-4" />
             Record Test Score
@@ -164,7 +164,7 @@ export const DocumentsScoresView: React.FC = () => {
       {activeTab === 'documents' && (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {documents.length === 0 ? (
-            <div className="col-span-full rounded-xl border border-dashed border-slate-200 p-12 text-center text-xs text-slate-400 dark:border-slate-800">
+            <div className="col-span-full border border-dashed border-[#000000]/25 p-12 text-center text-xs font-serif italic text-[#000000]/50 bg-white/40">
               No document references linked yet. You can keep references to your CV, SOP drafts, and
               transcripts without copying files into the repository.
             </div>
@@ -172,38 +172,38 @@ export const DocumentsScoresView: React.FC = () => {
             documents.map((doc) => (
               <div
                 key={doc.id}
-                className="flex flex-col justify-between rounded-xl border border-slate-200 bg-white p-4 shadow-xs dark:border-slate-800 dark:bg-slate-900"
+                className="flex flex-col justify-between border border-[#000000]/20 bg-white p-4 shadow-xs text-[#000000]"
               >
                 <div>
                   <div className="flex justify-between items-start gap-2">
-                    <h4 className="font-bold text-xs text-slate-900 dark:text-slate-100">
-                      {doc.title}
-                    </h4>
-                    <span className="rounded bg-slate-100 px-1.5 py-0.5 text-[10px] font-mono font-medium text-slate-600 dark:bg-slate-800 dark:text-slate-300">
+                    <h4 className="font-serif font-bold text-xs text-[#000000]">{doc.title}</h4>
+                    <span className="border border-[#000000]/20 bg-[#F8EEDF] px-1.5 py-0.5 text-[10px] font-mono text-[#000000]">
                       {doc.version_label}
                     </span>
                   </div>
 
                   <p
-                    className="mt-1 text-[11px] text-slate-500 font-mono truncate"
+                    className="mt-1 text-[11px] text-[#000000]/60 font-mono truncate"
                     title={doc.file_path}
                   >
                     {doc.file_path}
                   </p>
 
                   {doc.notes && (
-                    <p className="mt-2 text-xs text-slate-600 dark:text-slate-400 bg-slate-50 dark:bg-slate-800 p-2 rounded">
+                    <p className="mt-2 text-xs font-serif text-[#000000]/80 bg-[#E8C999]/15 border border-[#000000]/10 p-2">
                       {doc.notes}
                     </p>
                   )}
                 </div>
 
-                <div className="mt-4 flex items-center justify-between border-t border-slate-100 pt-3 dark:border-slate-800 text-xs">
-                  <span className="capitalize text-slate-400 text-[11px]">{doc.kind}</span>
+                <div className="mt-4 flex items-center justify-between border-t border-[#000000]/10 pt-3 text-xs">
+                  <span className="capitalize text-[#000000]/50 text-[11px] font-mono">
+                    {doc.kind}
+                  </span>
                   <button
                     type="button"
                     onClick={() => handleDeleteDoc(doc.id)}
-                    className="text-slate-400 hover:text-rose-600 p-1"
+                    className="text-[#000000]/40 hover:text-[#8E1616] p-1"
                     aria-label="Delete document"
                   >
                     <Trash2 className="h-4 w-4" />
@@ -219,7 +219,7 @@ export const DocumentsScoresView: React.FC = () => {
       {activeTab === 'scores' && (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {testScores.length === 0 ? (
-            <div className="col-span-full rounded-xl border border-dashed border-slate-200 p-12 text-center text-xs text-slate-400 dark:border-slate-800">
+            <div className="col-span-full border border-dashed border-[#000000]/25 p-12 text-center text-xs font-serif italic text-[#000000]/50 bg-white/40">
               No test scores recorded yet. Add your GRE, TOEFL, or IELTS scores to monitor validity
               expiration against application deadlines.
             </div>
@@ -231,14 +231,14 @@ export const DocumentsScoresView: React.FC = () => {
               return (
                 <div
                   key={score.id}
-                  className="rounded-xl border border-slate-200 bg-white p-5 shadow-xs dark:border-slate-800 dark:bg-slate-900 space-y-3"
+                  className="border border-[#000000]/20 bg-white p-5 shadow-xs space-y-3 text-[#000000]"
                 >
                   <div className="flex justify-between items-start">
                     <div>
-                      <span className="rounded bg-blue-100 px-2 py-0.5 text-xs font-bold text-blue-800 dark:bg-blue-950 dark:text-blue-300 uppercase">
+                      <span className="border border-[#8E1616] bg-[#8E1616] px-2 py-0.5 text-xs font-mono font-bold text-[#F8EEDF] uppercase">
                         {score.test}
                       </span>
-                      <p className="mt-1 font-mono text-2xl font-bold text-slate-900 dark:text-slate-100">
+                      <p className="mt-1 font-mono text-2xl font-bold text-[#000000]">
                         {score.total}
                       </p>
                     </div>
@@ -246,7 +246,7 @@ export const DocumentsScoresView: React.FC = () => {
                     <button
                       type="button"
                       onClick={() => handleDeleteScore(score.id)}
-                      className="text-slate-400 hover:text-rose-600 p-1"
+                      className="text-[#000000]/40 hover:text-[#8E1616] p-1"
                       aria-label="Delete test score"
                     >
                       <Trash2 className="h-4 w-4" />
@@ -255,35 +255,35 @@ export const DocumentsScoresView: React.FC = () => {
 
                   {/* Section breakdown */}
                   {score.sections && score.sections !== '{}' && (
-                    <div className="rounded-md bg-slate-50 p-2.5 dark:bg-slate-800 text-xs font-mono text-slate-700 dark:text-slate-300">
+                    <div className="border border-[#000000]/15 bg-[#F8EEDF] p-2.5 text-xs font-mono text-[#000000]">
                       {score.sections}
                     </div>
                   )}
 
                   {/* Expiration & Validity */}
-                  <div className="border-t border-slate-100 pt-3 dark:border-slate-800 text-xs space-y-1">
-                    <div className="flex justify-between text-slate-500">
+                  <div className="border-t border-[#000000]/10 pt-3 text-xs space-y-1">
+                    <div className="flex justify-between text-[#000000]/70 font-mono">
                       <span>Test Date:</span>
-                      <span className="font-mono">{score.taken_on}</span>
+                      <span>{score.taken_on}</span>
                     </div>
-                    <div className="flex justify-between text-slate-500">
+                    <div className="flex justify-between text-[#000000]/70 font-mono">
                       <span>Valid Until:</span>
-                      <span className="font-mono">{score.valid_until}</span>
+                      <span>{score.valid_until}</span>
                     </div>
 
                     {isExpired ? (
-                      <div className="flex items-center gap-1.5 text-rose-600 font-semibold text-xs pt-1">
-                        <AlertTriangle className="h-4 w-4 shrink-0" />
+                      <div className="flex items-center gap-1.5 text-[#8E1616] font-semibold text-xs pt-1 font-mono">
+                        <AlertTriangle className="h-4 w-4 shrink-0 text-[#8E1616]" />
                         <span>Score is expired (ETS 5-year validity).</span>
                       </div>
                     ) : expiresBeforeDeadline ? (
-                      <div className="flex items-center gap-1.5 text-amber-600 font-semibold text-xs pt-1">
-                        <AlertTriangle className="h-4 w-4 shrink-0" />
+                      <div className="flex items-center gap-1.5 text-[#8E1616] font-semibold text-xs pt-1 font-mono">
+                        <AlertTriangle className="h-4 w-4 shrink-0 text-[#8E1616]" />
                         <span>Warning: Expires before upcoming application deadlines.</span>
                       </div>
                     ) : (
-                      <div className="flex items-center gap-1 text-emerald-600 text-[11px] pt-1">
-                        <CheckCircle className="h-3.5 w-3.5" />
+                      <div className="flex items-center gap-1 text-[#000000] text-[11px] pt-1 font-mono">
+                        <CheckCircle className="h-3.5 w-3.5 text-[#8E1616]" />
                         <span>Valid for all upcoming deadlines</span>
                       </div>
                     )}
@@ -305,24 +305,24 @@ export const DocumentsScoresView: React.FC = () => {
       >
         <form onSubmit={handleAddDocument} className="space-y-4 text-xs">
           <div>
-            <label className="block font-semibold">Document Title *</label>
+            <label className="block font-semibold text-[#000000]">Document Title *</label>
             <input
               type="text"
               required
               placeholder="e.g. Statement of Purpose (AI / Systems)"
               value={docTitle}
               onChange={(e) => setDocTitle(e.target.value)}
-              className="mt-1 block w-full rounded border border-slate-300 p-2 dark:border-slate-700 dark:bg-slate-800"
+              className="mt-1 block w-full border border-[#000000]/25 bg-[#F8EEDF] p-2 text-xs font-mono text-[#000000] focus:border-[#8E1616] focus:outline-none"
             />
           </div>
 
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className="block font-semibold">Kind</label>
+              <label className="block font-semibold text-[#000000]">Kind</label>
               <select
                 value={docKind}
                 onChange={(e) => setDocKind(e.target.value)}
-                className="mt-1 block w-full rounded border border-slate-300 p-1.5 dark:border-slate-700 dark:bg-slate-800"
+                className="mt-1 block w-full border border-[#000000]/25 bg-[#F8EEDF] p-1.5 text-xs font-mono text-[#000000] focus:border-[#8E1616] focus:outline-none"
               >
                 <option value="sop">Statement of Purpose</option>
                 <option value="cv">Curriculum Vitae</option>
@@ -332,39 +332,39 @@ export const DocumentsScoresView: React.FC = () => {
               </select>
             </div>
             <div>
-              <label className="block font-semibold">Version Label</label>
+              <label className="block font-semibold text-[#000000]">Version Label</label>
               <input
                 type="text"
                 value={docVersion}
                 onChange={(e) => setDocVersion(e.target.value)}
-                className="mt-1 block w-full rounded border border-slate-300 p-1.5 dark:border-slate-700 dark:bg-slate-800 font-mono"
+                className="mt-1 block w-full border border-[#000000]/25 bg-[#F8EEDF] p-1.5 font-mono text-xs text-[#000000] focus:border-[#8E1616] focus:outline-none"
               />
             </div>
           </div>
 
           <div>
-            <label className="block font-semibold">Local File Path *</label>
+            <label className="block font-semibold text-[#000000]">Local File Path *</label>
             <input
               type="text"
               required
               placeholder="e.g. C:/Users/Documents/PhD/SOP_v1.pdf"
               value={docPath}
               onChange={(e) => setDocPath(e.target.value)}
-              className="mt-1 block w-full rounded border border-slate-300 p-2 font-mono dark:border-slate-700 dark:bg-slate-800"
+              className="mt-1 block w-full border border-[#000000]/25 bg-[#F8EEDF] p-2 font-mono text-xs text-[#000000] focus:border-[#8E1616] focus:outline-none"
             />
           </div>
 
-          <div className="flex justify-end gap-2 pt-4 border-t border-slate-200 dark:border-slate-800">
+          <div className="flex justify-end gap-2 pt-4 border-t border-[#000000]/15">
             <button
               type="button"
               onClick={() => setIsAddDocOpen(false)}
-              className="rounded border border-slate-300 px-3 py-1.5 text-slate-600 hover:bg-slate-50"
+              className="border border-[#000000]/25 bg-[#F8EEDF] px-3 py-1.5 text-xs font-mono uppercase tracking-wider text-[#000000] hover:bg-[#E8C999]/40"
             >
               Cancel
             </button>
             <button
               type="submit"
-              className="rounded bg-blue-600 px-4 py-1.5 font-semibold text-white hover:bg-blue-700"
+              className="bg-[#8E1616] px-4 py-1.5 font-mono text-xs font-bold uppercase tracking-wider text-[#F8EEDF] hover:bg-[#6d1010] border border-[#8E1616]"
             >
               Save Document
             </button>
@@ -383,11 +383,11 @@ export const DocumentsScoresView: React.FC = () => {
         <form onSubmit={handleAddScore} className="space-y-4 text-xs">
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className="block font-semibold">Test</label>
+              <label className="block font-semibold text-[#000000]">Test</label>
               <select
                 value={testType}
                 onChange={(e) => setTestType(e.target.value as TestType)}
-                className="mt-1 block w-full rounded border border-slate-300 p-1.5 dark:border-slate-700 dark:bg-slate-800"
+                className="mt-1 block w-full border border-[#000000]/25 bg-[#F8EEDF] p-1.5 font-mono text-xs text-[#000000] focus:border-[#8E1616] focus:outline-none"
               >
                 <option value="gre">GRE General</option>
                 <option value="toefl">TOEFL iBT</option>
@@ -396,73 +396,75 @@ export const DocumentsScoresView: React.FC = () => {
               </select>
             </div>
             <div>
-              <label className="block font-semibold">Total Score *</label>
+              <label className="block font-semibold text-[#000000]">Total Score *</label>
               <input
                 type="text"
                 required
                 placeholder="e.g. 328 or 112"
                 value={totalScore}
                 onChange={(e) => setTotalScore(e.target.value)}
-                className="mt-1 block w-full rounded border border-slate-300 p-1.5 font-mono dark:border-slate-700 dark:bg-slate-800"
+                className="mt-1 block w-full border border-[#000000]/25 bg-[#F8EEDF] p-1.5 font-mono text-xs text-[#000000] focus:border-[#8E1616] focus:outline-none"
               />
             </div>
           </div>
 
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className="block font-semibold">Test Date</label>
+              <label className="block font-semibold text-[#000000]">Test Date</label>
               <input
                 type="date"
                 required
                 value={takenOn}
                 onChange={(e) => setTakenOn(e.target.value)}
-                className="mt-1 block w-full rounded border border-slate-300 p-1.5 font-mono dark:border-slate-700 dark:bg-slate-800"
+                className="mt-1 block w-full border border-[#000000]/25 bg-[#F8EEDF] p-1.5 font-mono text-xs text-[#000000] focus:border-[#8E1616] focus:outline-none"
               />
             </div>
             <div>
-              <label className="block font-semibold">Valid Until</label>
+              <label className="block font-semibold text-[#000000]">Valid Until</label>
               <input
                 type="date"
                 required
                 value={validUntil}
                 onChange={(e) => setValidUntil(e.target.value)}
-                className="mt-1 block w-full rounded border border-slate-300 p-1.5 font-mono dark:border-slate-700 dark:bg-slate-800"
+                className="mt-1 block w-full border border-[#000000]/25 bg-[#F8EEDF] p-1.5 font-mono text-xs text-[#000000] focus:border-[#8E1616] focus:outline-none"
               />
             </div>
           </div>
 
           <div>
-            <label className="block font-semibold">Section Breakdown (JSON or text)</label>
+            <label className="block font-semibold text-[#000000]">
+              Section Breakdown (JSON or text)
+            </label>
             <input
               type="text"
               value={sectionsJson}
               onChange={(e) => setSectionsJson(e.target.value)}
-              className="mt-1 block w-full rounded border border-slate-300 p-1.5 font-mono dark:border-slate-700 dark:bg-slate-800"
+              className="mt-1 block w-full border border-[#000000]/25 bg-[#F8EEDF] p-1.5 font-mono text-xs text-[#000000] focus:border-[#8E1616] focus:outline-none"
             />
           </div>
 
           <div>
-            <label className="block font-semibold">Notes</label>
+            <label className="block font-semibold text-[#000000]">Notes</label>
             <input
               type="text"
               placeholder="e.g. Unofficial score report; official ordered"
               value={scoreNotes}
               onChange={(e) => setScoreNotes(e.target.value)}
-              className="mt-1 block w-full rounded border border-slate-300 p-1.5 dark:border-slate-700 dark:bg-slate-800"
+              className="mt-1 block w-full border border-[#000000]/25 bg-[#F8EEDF] p-1.5 font-serif text-xs text-[#000000] focus:border-[#8E1616] focus:outline-none"
             />
           </div>
 
-          <div className="flex justify-end gap-2 pt-4 border-t border-slate-200 dark:border-slate-800">
+          <div className="flex justify-end gap-2 pt-4 border-t border-[#000000]/15">
             <button
               type="button"
               onClick={() => setIsAddScoreOpen(false)}
-              className="rounded border border-slate-300 px-3 py-1.5 text-slate-600 hover:bg-slate-50"
+              className="border border-[#000000]/25 bg-[#F8EEDF] px-3 py-1.5 text-xs font-mono uppercase tracking-wider text-[#000000] hover:bg-[#E8C999]/40"
             >
               Cancel
             </button>
             <button
               type="submit"
-              className="rounded bg-blue-600 px-4 py-1.5 font-semibold text-white hover:bg-blue-700"
+              className="bg-[#8E1616] px-4 py-1.5 font-mono text-xs font-bold uppercase tracking-wider text-[#F8EEDF] hover:bg-[#6d1010] border border-[#8E1616]"
             >
               Save Score
             </button>

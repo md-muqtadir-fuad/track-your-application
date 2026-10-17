@@ -127,45 +127,43 @@ export const FacultyView: React.FC = () => {
     const config: Record<OutreachStatus, { label: string; bg: string; text: string }> = {
       not_contacted: {
         label: 'Not Contacted',
-        bg: 'bg-slate-100 dark:bg-slate-800',
-        text: 'text-slate-600 dark:text-slate-400',
+        bg: 'bg-transparent border border-[#000000]/25',
+        text: 'text-[#000000]/60 font-mono',
       },
       emailed: {
         label: 'Emailed',
-        bg: 'bg-blue-50 dark:bg-blue-950/80',
-        text: 'text-blue-700 dark:text-blue-300',
+        bg: 'bg-[#E8C999]/30 border border-[#8E1616]/40',
+        text: 'text-[#8E1616] font-mono font-bold',
       },
       replied_positive: {
         label: 'Replied: Positive',
-        bg: 'bg-emerald-50 dark:bg-emerald-950/80',
-        text: 'text-emerald-800 dark:text-emerald-300',
+        bg: 'bg-[#8E1616] border border-[#8E1616]',
+        text: 'text-[#F8EEDF] font-mono font-bold',
       },
       replied_neutral: {
         label: 'Replied: Neutral',
-        bg: 'bg-amber-50 dark:bg-amber-950/80',
-        text: 'text-amber-800 dark:text-amber-300',
+        bg: 'bg-[#E8C999] border border-[#000000]/30',
+        text: 'text-[#000000] font-mono font-semibold',
       },
       replied_no: {
         label: 'Replied: No Openings',
-        bg: 'bg-slate-100 dark:bg-slate-800',
-        text: 'text-slate-600 dark:text-slate-400',
+        bg: 'bg-transparent border border-[#000000]/20 line-through',
+        text: 'text-[#000000]/40 font-mono',
       },
       meeting_set: {
         label: 'Meeting Set',
-        bg: 'bg-purple-50 dark:bg-purple-950/80',
-        text: 'text-purple-700 dark:text-purple-300',
+        bg: 'bg-[#8E1616]/15 border border-[#8E1616]',
+        text: 'text-[#8E1616] font-mono font-bold',
       },
       met: {
         label: 'Met',
-        bg: 'bg-emerald-50 dark:bg-emerald-950/80',
-        text: 'text-emerald-800 dark:text-emerald-300',
+        bg: 'bg-[#000000] border border-[#000000]',
+        text: 'text-[#F8EEDF] font-mono font-bold',
       },
     };
     const c = config[status] ?? config.not_contacted;
     return (
-      <span className={`rounded-full px-2.5 py-0.5 text-xs font-semibold ${c.bg} ${c.text}`}>
-        {c.label}
-      </span>
+      <span className={`rounded-none px-2.5 py-0.5 text-xs ${c.bg} ${c.text}`}>{c.label}</span>
     );
   };
 
@@ -174,14 +172,14 @@ export const FacultyView: React.FC = () => {
       {/* Header controls */}
       <div className="flex flex-wrap items-center justify-between gap-4">
         <div className="flex items-center gap-3">
-          <div className="flex rounded-lg border border-slate-300 bg-slate-100 p-0.5 dark:border-slate-700 dark:bg-slate-800 text-xs font-medium">
+          <div className="flex rounded-none border border-[#000000]/25 bg-[#F8EEDF] p-0.5 text-xs font-mono uppercase tracking-wider">
             <button
               type="button"
               onClick={() => setFilterMode('all')}
-              className={`rounded-md px-3 py-1.5 transition-colors ${
+              className={`rounded-none px-3 py-1.5 transition-colors ${
                 filterMode === 'all'
-                  ? 'bg-white text-slate-900 shadow-xs dark:bg-slate-900 dark:text-slate-100'
-                  : 'text-slate-600 dark:text-slate-400 hover:text-slate-900'
+                  ? 'bg-[#8E1616] text-[#F8EEDF] font-bold shadow-xs'
+                  : 'text-[#000000]/70 hover:text-[#000000]'
               }`}
             >
               All Faculty ({facultyList.length})
@@ -189,10 +187,10 @@ export const FacultyView: React.FC = () => {
             <button
               type="button"
               onClick={() => setFilterMode('due')}
-              className={`rounded-md px-3 py-1.5 transition-colors ${
+              className={`rounded-none px-3 py-1.5 transition-colors ${
                 filterMode === 'due'
-                  ? 'bg-white text-slate-900 shadow-xs dark:bg-slate-900 dark:text-slate-100'
-                  : 'text-slate-600 dark:text-slate-400 hover:text-slate-900'
+                  ? 'bg-[#8E1616] text-[#F8EEDF] font-bold shadow-xs'
+                  : 'text-[#000000]/70 hover:text-[#000000]'
               }`}
             >
               Follow-ups Due
@@ -203,7 +201,7 @@ export const FacultyView: React.FC = () => {
         <button
           type="button"
           onClick={() => setIsAddModalOpen(true)}
-          className="inline-flex items-center gap-1.5 rounded-lg bg-blue-600 px-4 py-2 text-xs font-semibold text-white shadow-xs hover:bg-blue-700 transition-colors"
+          className="inline-flex items-center gap-1.5 rounded-none bg-[#8E1616] px-4 py-2 text-xs font-mono font-semibold uppercase tracking-wider text-[#F8EEDF] hover:bg-[#6d1010] border border-[#8E1616] transition-colors"
         >
           <Plus className="h-4 w-4" />
           Add Faculty Contact
@@ -213,7 +211,7 @@ export const FacultyView: React.FC = () => {
       {/* Faculty Cards Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {filteredFaculty.length === 0 ? (
-          <div className="col-span-2 rounded-xl border border-dashed border-slate-200 p-12 text-center text-xs text-slate-400 dark:border-slate-800">
+          <div className="col-span-2 border border-dashed border-[#000000]/25 p-12 text-center text-xs font-serif italic text-[#000000]/50 bg-white/40">
             No faculty contacts found in this view.
           </div>
         ) : (
@@ -227,19 +225,17 @@ export const FacultyView: React.FC = () => {
             return (
               <div
                 key={fac.id}
-                className="flex flex-col justify-between rounded-xl border border-slate-200 bg-white p-5 shadow-xs dark:border-slate-800 dark:bg-slate-900"
+                className="flex flex-col justify-between border border-[#000000]/20 bg-white p-5 shadow-xs text-[#000000]"
               >
                 <div>
                   <div className="flex items-start justify-between gap-2">
                     <div>
-                      <h4 className="text-base font-bold text-slate-900 dark:text-slate-100">
-                        {fac.name}
-                      </h4>
-                      <p className="text-xs text-slate-600 dark:text-slate-400">
+                      <h4 className="font-serif text-base font-bold text-[#000000]">{fac.name}</h4>
+                      <p className="text-xs font-mono text-[#000000]/70">
                         {fac.title} • {fac.affiliation}
                       </p>
                       {uni && (
-                        <p className="text-xs font-medium text-blue-600 dark:text-blue-400 mt-0.5">
+                        <p className="text-xs font-serif font-bold text-[#8E1616] mt-0.5">
                           {uni.name} ({uni.city})
                         </p>
                       )}
@@ -252,9 +248,9 @@ export const FacultyView: React.FC = () => {
                     {fac.email && (
                       <a
                         href={`mailto:${fac.email}`}
-                        className="inline-flex items-center gap-1 text-slate-600 hover:text-blue-600 dark:text-slate-300 dark:hover:text-blue-400 font-mono"
+                        className="inline-flex items-center gap-1 text-[#000000]/70 hover:text-[#8E1616] font-mono"
                       >
-                        <Mail className="h-3.5 w-3.5" />
+                        <Mail className="h-3.5 w-3.5 text-[#8E1616]" />
                         {fac.email}
                       </a>
                     )}
@@ -263,9 +259,9 @@ export const FacultyView: React.FC = () => {
                         href={fac.website}
                         target="_blank"
                         rel="noreferrer"
-                        className="inline-flex items-center gap-1 text-slate-500 hover:text-blue-600 dark:text-slate-400 dark:hover:text-blue-400"
+                        className="inline-flex items-center gap-1 text-[#000000]/70 hover:text-[#8E1616] font-mono"
                       >
-                        <ExternalLink className="h-3 w-3" />
+                        <ExternalLink className="h-3 w-3 text-[#8E1616]" />
                         Homepage
                       </a>
                     )}
@@ -273,18 +269,18 @@ export const FacultyView: React.FC = () => {
 
                   {/* Notes / Research topics */}
                   {fac.notes && (
-                    <div className="mt-3 rounded-md bg-slate-50 p-2.5 text-xs text-slate-600 dark:bg-slate-800 dark:text-slate-300 whitespace-pre-line">
+                    <div className="mt-3 border border-[#000000]/15 bg-[#E8C999]/15 p-2.5 text-xs text-[#000000]/80 whitespace-pre-line font-serif">
                       {fac.notes}
                     </div>
                   )}
 
                   {/* Latest Interaction & Follow-up date */}
-                  <div className="mt-4 space-y-1.5 border-t border-slate-100 pt-3 dark:border-slate-800 text-xs">
+                  <div className="mt-4 space-y-1.5 border-t border-[#000000]/10 pt-3 text-xs">
                     {latestInteraction && (
-                      <div className="flex items-center gap-1.5 text-slate-600 dark:text-slate-300">
-                        <MessageSquare className="h-3.5 w-3.5 text-blue-500 shrink-0" />
+                      <div className="flex items-center gap-1.5 text-[#000000]/80">
+                        <MessageSquare className="h-3.5 w-3.5 text-[#8E1616] shrink-0" />
                         <span className="line-clamp-1">{latestInteraction.summary}</span>
-                        <span className="font-mono text-[10px] text-slate-400 shrink-0">
+                        <span className="font-mono text-[10px] text-[#000000]/50 shrink-0">
                           ({latestInteraction.occurred_on.slice(0, 10)})
                         </span>
                       </div>
@@ -292,13 +288,11 @@ export const FacultyView: React.FC = () => {
 
                     {fac.next_follow_up_on && (
                       <div
-                        className={`flex items-center gap-1.5 font-medium ${
-                          isFollowUpDue
-                            ? 'text-rose-600 dark:text-rose-400 font-semibold'
-                            : 'text-amber-700 dark:text-amber-300'
+                        className={`flex items-center gap-1.5 font-mono text-xs ${
+                          isFollowUpDue ? 'text-[#8E1616] font-bold' : 'text-[#000000]/80'
                         }`}
                       >
-                        <Clock className="h-3.5 w-3.5 shrink-0" />
+                        <Clock className="h-3.5 w-3.5 text-[#8E1616] shrink-0" />
                         <span>
                           Follow-up: {fac.next_follow_up_on.replace('T', ' ').slice(0, 16)}
                           {isFollowUpDue ? ' (DUE NOW)' : ''}
@@ -309,16 +303,16 @@ export const FacultyView: React.FC = () => {
                 </div>
 
                 {/* Bottom action */}
-                <div className="mt-4 flex justify-end gap-2 border-t border-slate-100 pt-3 dark:border-slate-800">
+                <div className="mt-4 flex justify-end gap-2 border-t border-[#000000]/10 pt-3">
                   <button
                     type="button"
                     onClick={() => {
                       setInteractionContact(fac);
                       setNewOutreachStatus(fac.outreach_status);
                     }}
-                    className="inline-flex items-center gap-1 rounded-md bg-slate-100 px-3 py-1.5 text-xs font-semibold text-slate-700 hover:bg-slate-200 dark:bg-slate-800 dark:text-slate-200 dark:hover:bg-slate-700"
+                    className="inline-flex items-center gap-1 border border-[#000000]/25 bg-[#F8EEDF] px-3 py-1.5 text-xs font-mono font-semibold uppercase tracking-wider text-[#000000] hover:bg-[#E8C999]/40 hover:border-[#8E1616] transition-colors"
                   >
-                    <Mail className="h-3.5 w-3.5" />
+                    <Mail className="h-3.5 w-3.5 text-[#8E1616]" />
                     Log Email / Interaction
                   </button>
                 </div>
@@ -336,56 +330,48 @@ export const FacultyView: React.FC = () => {
         description="Record a professor, potential advisor, or faculty member to contact."
         maxWidth="lg"
       >
-        <form onSubmit={handleAddFaculty} className="space-y-4">
+        <form onSubmit={handleAddFaculty} className="space-y-4 text-xs">
           <div>
-            <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300">
-              Professor Name *
-            </label>
+            <label className="block font-semibold text-[#000000]">Professor Name *</label>
             <input
               type="text"
               required
               placeholder="e.g. Dr. Md Abdul Quddus, PhD"
               value={name}
               onChange={(e) => setName(e.target.value)}
-              className="mt-1 block w-full rounded-md border border-slate-300 px-3 py-2 text-xs text-slate-900 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100"
+              className="mt-1 block w-full border border-[#000000]/25 bg-[#F8EEDF] px-3 py-2 text-xs font-mono text-[#000000] focus:border-[#8E1616] focus:outline-none"
             />
           </div>
 
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300">
-                Title
-              </label>
+              <label className="block font-semibold text-[#000000]">Title</label>
               <input
                 type="text"
                 placeholder="e.g. Assistant Professor"
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
-                className="mt-1 block w-full rounded-md border border-slate-300 px-3 py-2 text-xs text-slate-900 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100"
+                className="mt-1 block w-full border border-[#000000]/25 bg-[#F8EEDF] px-3 py-2 text-xs font-mono text-[#000000] focus:border-[#8E1616] focus:outline-none"
               />
             </div>
             <div>
-              <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300">
-                Department / Program
-              </label>
+              <label className="block font-semibold text-[#000000]">Department / Program</label>
               <input
                 type="text"
                 placeholder="e.g. Textile Engineering, Chemistry and Science"
                 value={affiliation}
                 onChange={(e) => setAffiliation(e.target.value)}
-                className="mt-1 block w-full rounded-md border border-slate-300 px-3 py-2 text-xs text-slate-900 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100"
+                className="mt-1 block w-full border border-[#000000]/25 bg-[#F8EEDF] px-3 py-2 text-xs font-mono text-[#000000] focus:border-[#8E1616] focus:outline-none"
               />
             </div>
           </div>
 
           <div>
-            <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300">
-              University
-            </label>
+            <label className="block font-semibold text-[#000000]">University</label>
             <select
               value={universityId}
               onChange={(e) => setUniversityId(e.target.value)}
-              className="mt-1 block w-full rounded-md border border-slate-300 bg-white px-3 py-2 text-xs text-slate-900 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100"
+              className="mt-1 block w-full border border-[#000000]/25 bg-[#F8EEDF] px-3 py-2 text-xs font-mono text-[#000000] focus:border-[#8E1616] focus:outline-none"
             >
               <option value="">Select University (optional)</option>
               {universities.map((u) => (
@@ -398,19 +384,17 @@ export const FacultyView: React.FC = () => {
 
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300">
-                Email Address
-              </label>
+              <label className="block font-semibold text-[#000000]">Email Address</label>
               <input
                 type="email"
                 placeholder="e.g. mquddus@ncsu.edu"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="mt-1 block w-full rounded-md border border-slate-300 px-3 py-2 text-xs text-slate-900 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100"
+                className="mt-1 block w-full border border-[#000000]/25 bg-[#F8EEDF] px-3 py-2 text-xs font-mono text-[#000000] focus:border-[#8E1616] focus:outline-none"
               />
             </div>
             <div>
-              <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300">
+              <label className="block font-semibold text-[#000000]">
                 Homepage / Google Scholar
               </label>
               <input
@@ -418,35 +402,33 @@ export const FacultyView: React.FC = () => {
                 placeholder="https://..."
                 value={website}
                 onChange={(e) => setWebsite(e.target.value)}
-                className="mt-1 block w-full rounded-md border border-slate-300 px-3 py-2 text-xs text-slate-900 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100"
+                className="mt-1 block w-full border border-[#000000]/25 bg-[#F8EEDF] px-3 py-2 text-xs font-mono text-[#000000] focus:border-[#8E1616] focus:outline-none"
               />
             </div>
           </div>
 
           <div>
-            <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300">
-              Research Topics & Notes
-            </label>
+            <label className="block font-semibold text-[#000000]">Research Topics & Notes</label>
             <textarea
               rows={3}
               placeholder="e.g. multiagent systems, game-theoretical learning..."
               value={notes}
               onChange={(e) => setNotes(e.target.value)}
-              className="mt-1 block w-full rounded-md border border-slate-300 p-2 text-xs text-slate-900 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100"
+              className="mt-1 block w-full border border-[#000000]/25 bg-[#F8EEDF] p-2 text-xs font-serif text-[#000000] focus:border-[#8E1616] focus:outline-none"
             />
           </div>
 
-          <div className="flex justify-end gap-2 pt-4 border-t border-slate-200 dark:border-slate-800">
+          <div className="flex justify-end gap-2 pt-4 border-t border-[#000000]/15">
             <button
               type="button"
               onClick={() => setIsAddModalOpen(false)}
-              className="rounded-md border border-slate-300 px-3 py-1.5 text-xs text-slate-600 hover:bg-slate-50 dark:border-slate-700 dark:text-slate-300"
+              className="border border-[#000000]/25 bg-[#F8EEDF] px-3 py-1.5 text-xs font-mono uppercase tracking-wider text-[#000000] hover:bg-[#E8C999]/40"
             >
               Cancel
             </button>
             <button
               type="submit"
-              className="rounded-md bg-blue-600 px-4 py-1.5 text-xs font-semibold text-white hover:bg-blue-700"
+              className="bg-[#8E1616] px-4 py-1.5 text-xs font-mono font-bold uppercase tracking-wider text-[#F8EEDF] hover:bg-[#6d1010] border border-[#8E1616]"
             >
               Save Contact
             </button>
@@ -466,13 +448,13 @@ export const FacultyView: React.FC = () => {
           <form onSubmit={handleLogInteraction} className="space-y-4 text-xs">
             <div className="grid grid-cols-2 gap-3">
               <div>
-                <label className="block font-semibold">Channel</label>
+                <label className="block font-semibold text-[#000000]">Channel</label>
                 <select
                   value={interChannel}
                   onChange={(e) =>
                     setInterChannel(e.target.value as 'email' | 'meeting' | 'call' | 'other')
                   }
-                  className="mt-1 block w-full rounded border border-slate-300 p-1.5 dark:border-slate-700 dark:bg-slate-800"
+                  className="mt-1 block w-full border border-[#000000]/25 bg-[#F8EEDF] p-1.5 font-mono text-[#000000] focus:border-[#8E1616] focus:outline-none"
                 >
                   <option value="email">Email</option>
                   <option value="meeting">Meeting / Zoom</option>
@@ -481,11 +463,11 @@ export const FacultyView: React.FC = () => {
                 </select>
               </div>
               <div>
-                <label className="block font-semibold">Direction</label>
+                <label className="block font-semibold text-[#000000]">Direction</label>
                 <select
                   value={interDirection}
                   onChange={(e) => setInterDirection(e.target.value as 'sent' | 'received')}
-                  className="mt-1 block w-full rounded border border-slate-300 p-1.5 dark:border-slate-700 dark:bg-slate-800"
+                  className="mt-1 block w-full border border-[#000000]/25 bg-[#F8EEDF] p-1.5 font-mono text-[#000000] focus:border-[#8E1616] focus:outline-none"
                 >
                   <option value="sent">Sent by me</option>
                   <option value="received">Received from faculty</option>
@@ -494,45 +476,45 @@ export const FacultyView: React.FC = () => {
             </div>
 
             <div>
-              <label className="block font-semibold">Summary / Outcome *</label>
+              <label className="block font-semibold text-[#000000]">Summary / Outcome *</label>
               <textarea
                 required
                 rows={3}
                 placeholder="e.g. Sent prospective PhD inquiry regarding research and openings..."
                 value={interSummary}
                 onChange={(e) => setInterSummary(e.target.value)}
-                className="mt-1 block w-full rounded border border-slate-300 p-2 dark:border-slate-700 dark:bg-slate-800"
+                className="mt-1 block w-full border border-[#000000]/25 bg-[#F8EEDF] p-2 text-xs font-serif text-[#000000] focus:border-[#8E1616] focus:outline-none"
               />
             </div>
 
             <div className="grid grid-cols-2 gap-3">
               <div>
-                <label className="block font-semibold">Occurred On</label>
+                <label className="block font-semibold text-[#000000]">Occurred On</label>
                 <input
                   type="datetime-local"
                   required
                   value={interDate}
                   onChange={(e) => setInterDate(e.target.value)}
-                  className="mt-1 block w-full rounded border border-slate-300 p-1.5 font-mono dark:border-slate-700 dark:bg-slate-800"
+                  className="mt-1 block w-full border border-[#000000]/25 bg-[#F8EEDF] p-1.5 font-mono text-[#000000] focus:border-[#8E1616] focus:outline-none"
                 />
               </div>
               <div>
-                <label className="block font-semibold">Schedule Follow-up</label>
+                <label className="block font-semibold text-[#000000]">Schedule Follow-up</label>
                 <input
                   type="datetime-local"
                   value={interFollowUp}
                   onChange={(e) => setInterFollowUp(e.target.value)}
-                  className="mt-1 block w-full rounded border border-slate-300 p-1.5 font-mono dark:border-slate-700 dark:bg-slate-800"
+                  className="mt-1 block w-full border border-[#000000]/25 bg-[#F8EEDF] p-1.5 font-mono text-[#000000] focus:border-[#8E1616] focus:outline-none"
                 />
               </div>
             </div>
 
             <div>
-              <label className="block font-semibold">Update Outreach Status</label>
+              <label className="block font-semibold text-[#000000]">Update Outreach Status</label>
               <select
                 value={newOutreachStatus}
                 onChange={(e) => setNewOutreachStatus(e.target.value as OutreachStatus)}
-                className="mt-1 block w-full rounded border border-slate-300 p-1.5 dark:border-slate-700 dark:bg-slate-800"
+                className="mt-1 block w-full border border-[#000000]/25 bg-[#F8EEDF] p-1.5 font-mono text-[#000000] focus:border-[#8E1616] focus:outline-none"
               >
                 <option value="emailed">Emailed (Awaiting reply)</option>
                 <option value="replied_positive">Replied: Positive</option>
@@ -543,17 +525,17 @@ export const FacultyView: React.FC = () => {
               </select>
             </div>
 
-            <div className="flex justify-end gap-2 pt-4 border-t border-slate-200 dark:border-slate-800">
+            <div className="flex justify-end gap-2 pt-4 border-t border-[#000000]/15">
               <button
                 type="button"
                 onClick={() => setInteractionContact(null)}
-                className="rounded-md border border-slate-300 px-3 py-1.5 text-slate-600 hover:bg-slate-50 dark:border-slate-700 dark:text-slate-300"
+                className="border border-[#000000]/25 bg-[#F8EEDF] px-3 py-1.5 text-xs font-mono uppercase tracking-wider text-[#000000] hover:bg-[#E8C999]/40"
               >
                 Cancel
               </button>
               <button
                 type="submit"
-                className="rounded-md bg-blue-600 px-4 py-1.5 font-semibold text-white hover:bg-blue-700"
+                className="bg-[#8E1616] px-4 py-1.5 font-mono text-xs font-bold uppercase tracking-wider text-[#F8EEDF] hover:bg-[#6d1010] border border-[#8E1616]"
               >
                 Save Interaction
               </button>

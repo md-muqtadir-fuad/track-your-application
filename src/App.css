@@ -1,12 +1,22 @@
 @import 'tailwindcss';
 @import '@fontsource-variable/inter';
 
-html,
-body,
-#root {
-  height: 100%;
+@custom-variant dark (&:where(.dark, .dark *));
+
+:root {
+  --color-ink: #000000;
+  --color-oxblood: #8e1616;
+  --color-sandstone: #e8c999;
+  --color-ivory: #f8eedf;
+  --font-serif: 'EB Garamond', Garamond, Georgia, 'Times New Roman', serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+}
+
+body {
   margin: 0;
   padding: 0;
+  background-color: #f8eedf;
+  color: #000000;
   font-family:
     'Inter Variable',
     -apple-system,
@@ -14,4 +24,101 @@ body,
     'Segoe UI',
     Roboto,
     sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Scholarly & Scientific Typography Utilities */
+.font-serif {
+  font-family: var(--font-serif);
+}
+
+.font-mono {
+  font-family: var(--font-mono);
+}
+
+/* Scholarly Card & Container Styles */
+.scholar-card {
+  background-color: #ffffff;
+  border: 1px solid rgba(0, 0, 0, 0.14);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+}
+
+.scholar-card-accent {
+  background-color: #ffffff;
+  border: 1px solid rgba(142, 22, 22, 0.25);
+  box-shadow: 0 1px 3px rgba(142, 22, 22, 0.06);
+}
+
+.scholar-panel {
+  background-color: #f8eedf;
+  border: 1px solid rgba(0, 0, 0, 0.12);
+}
+
+/* Scientific Table Rules */
+.scientific-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.scientific-table thead th {
+  border-top: 2px solid #000000;
+  border-bottom: 1px solid #000000;
+  font-family: var(--font-serif);
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  color: #000000;
+  padding: 8px 12px;
+  text-align: left;
+}
+
+.scientific-table tbody tr {
+  border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+.scientific-table tbody tr:last-child {
+  border-bottom: 2px solid #000000;
+}
+
+.scientific-table tbody td {
+  padding: 10px 12px;
+  font-size: 13px;
+}
+
+/* Scholarly Button Styles */
+.btn-academic-primary {
+  background-color: #8e1616;
+  color: #f8eedf;
+  border: 1px solid #8e1616;
+  font-weight: 600;
+  transition: all 0.15s ease-in-out;
+}
+
+.btn-academic-primary:hover {
+  background-color: #6d1010;
+  border-color: #6d1010;
+  color: #ffffff;
+}
+
+.btn-academic-secondary {
+  background-color: #f8eedf;
+  color: #000000;
+  border: 1px solid rgba(0, 0, 0, 0.25);
+  font-weight: 500;
+  transition: all 0.15s ease-in-out;
+}
+
+.btn-academic-secondary:hover {
+  background-color: #e8c999;
+  border-color: #000000;
+}
+
+/* Academic Fig Caption */
+.scientific-caption {
+  font-family: var(--font-serif);
+  font-size: 11.5px;
+  font-style: italic;
+  color: #4a4a4a;
+  margin-top: 6px;
+  letter-spacing: 0.01em;
 }

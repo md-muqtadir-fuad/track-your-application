@@ -67,12 +67,12 @@ export const OffersView: React.FC = () => {
   return (
     <div className="space-y-6">
       {/* Header banner */}
-      <div className="rounded-xl border border-slate-200 bg-white p-5 shadow-xs dark:border-slate-800 dark:bg-slate-900">
-        <div className="flex items-center gap-2 text-slate-900 dark:text-slate-100 font-bold text-sm">
-          <Award className="h-5 w-5 text-amber-500" />
+      <div className="border border-[#8E1616]/30 bg-[#F8EEDF] p-5 shadow-xs text-[#000000]">
+        <div className="flex items-center gap-2 font-serif font-bold text-sm text-[#8E1616]">
+          <Award className="h-5 w-5 text-[#8E1616]" />
           <span>Council of Graduate Schools (CGS) April 15 Resolution</span>
         </div>
-        <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">
+        <p className="mt-1 text-xs font-serif text-[#000000]/80">
           Under the CGS agreement, you are under no obligation to respond to offers of financial
           support prior to April 15. The deadline is 11:59 PM on April 15 in the offering school's
           time zone.
@@ -82,7 +82,7 @@ export const OffersView: React.FC = () => {
       {/* Offers side-by-side comparison */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {admittedOrOfferedApps.length === 0 ? (
-          <div className="col-span-full rounded-xl border border-dashed border-slate-200 p-12 text-center text-xs text-slate-400 dark:border-slate-800">
+          <div className="col-span-full border border-dashed border-[#000000]/25 p-12 text-center text-xs font-serif italic text-[#000000]/50 bg-white/40">
             No admitted programs or funding offers recorded yet. When you receive admission or
             funding, record offer terms here to compare them side by side.
           </div>
@@ -98,17 +98,15 @@ export const OffersView: React.FC = () => {
             return (
               <div
                 key={app.id}
-                className="flex flex-col justify-between rounded-xl border border-slate-200 bg-white p-5 shadow-xs dark:border-slate-800 dark:bg-slate-900 space-y-4"
+                className="flex flex-col justify-between border border-[#000000]/20 bg-white p-5 shadow-xs space-y-4 text-[#000000]"
               >
                 <div>
                   <div className="flex justify-between items-start">
                     <div>
-                      <h4 className="font-bold text-sm text-slate-900 dark:text-slate-100">
-                        {uni?.name}
-                      </h4>
-                      <p className="text-xs text-slate-500">{app.program}</p>
+                      <h4 className="font-serif font-bold text-sm text-[#000000]">{uni?.name}</h4>
+                      <p className="text-xs font-mono text-[#000000]/70 mt-0.5">{app.program}</p>
                     </div>
-                    <span className="rounded bg-emerald-100 px-2 py-0.5 text-xs font-bold text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300">
+                    <span className="border border-[#8E1616] bg-[#8E1616] px-2 py-0.5 text-xs font-mono font-bold text-[#F8EEDF]">
                       Admitted
                     </span>
                   </div>
@@ -116,39 +114,44 @@ export const OffersView: React.FC = () => {
                   {offer ? (
                     <div className="mt-4 space-y-3 text-xs">
                       {/* Stipend */}
-                      <div className="rounded-lg bg-slate-50 p-3 dark:bg-slate-800">
-                        <span className="text-[11px] text-slate-400 block">Annual Stipend</span>
+                      <div className="border border-[#000000]/15 bg-[#F8EEDF] p-3 text-[#000000]">
+                        <span className="text-[11px] font-mono text-[#000000]/60 block">
+                          Annual Stipend
+                        </span>
                         <div className="flex items-baseline gap-1 mt-0.5">
-                          <span className="font-mono text-xl font-bold text-slate-900 dark:text-slate-100">
+                          <span className="font-mono text-xl font-bold text-[#8E1616]">
                             ${annualStipend.toLocaleString()}
                           </span>
-                          <span className="text-slate-500 font-mono text-[11px]">
+                          <span className="text-[#000000]/60 font-mono text-[11px]">
                             {offer.currency} / year
                           </span>
                         </div>
-                        <span className="text-[10px] text-slate-400 block mt-0.5">
-                          Funding: <span className="capitalize">{offer.funding_type}</span> (Nominal
-                          figure)
+                        <span className="text-[10px] font-mono text-[#000000]/60 block mt-0.5">
+                          Funding:{' '}
+                          <span className="capitalize font-semibold text-[#000000]">
+                            {offer.funding_type}
+                          </span>{' '}
+                          (Nominal figure)
                         </span>
                       </div>
 
                       {/* Coverage checklist */}
-                      <div className="space-y-1.5 text-slate-600 dark:text-slate-300">
+                      <div className="space-y-1.5 font-mono text-xs text-[#000000]/80">
                         <div className="flex justify-between">
                           <span>Tuition Coverage:</span>
-                          <span className="font-semibold capitalize text-emerald-600">
+                          <span className="font-semibold capitalize text-[#8E1616]">
                             {offer.tuition} Waiver
                           </span>
                         </div>
                         <div className="flex justify-between">
                           <span>Health Insurance:</span>
-                          <span className="font-semibold capitalize text-emerald-600">
+                          <span className="font-semibold capitalize text-[#8E1616]">
                             {offer.health_insurance} Coverage
                           </span>
                         </div>
                         <div className="flex justify-between">
                           <span>Years Guaranteed:</span>
-                          <span className="font-semibold">
+                          <span className="font-semibold text-[#000000]">
                             {offer.years_guaranteed
                               ? `${offer.years_guaranteed} Years`
                               : 'Not specified'}
@@ -159,7 +162,7 @@ export const OffersView: React.FC = () => {
                       {/* Response deadline */}
                       {offer.response_due_local && uni && (
                         <div className="pt-2">
-                          <span className="text-[11px] text-slate-400 block mb-1">
+                          <span className="text-[11px] font-mono text-[#000000]/60 block mb-1">
                             Response Deadline
                           </span>
                           <CountdownBadge
@@ -172,7 +175,7 @@ export const OffersView: React.FC = () => {
                       )}
                     </div>
                   ) : (
-                    <div className="mt-4 p-4 rounded-lg bg-slate-50 text-center text-xs text-slate-400 dark:bg-slate-850">
+                    <div className="mt-4 p-4 border border-[#000000]/15 bg-[#F8EEDF] text-center text-xs font-serif italic text-[#000000]/60">
                       No funding offer details recorded yet.
                     </div>
                   )}
@@ -180,8 +183,8 @@ export const OffersView: React.FC = () => {
 
                 {/* Response decision selector */}
                 {offer && (
-                  <div className="border-t border-slate-100 pt-3 dark:border-slate-800 flex items-center justify-between text-xs">
-                    <span className="text-slate-400">My Decision:</span>
+                  <div className="border-t border-[#000000]/10 pt-3 flex items-center justify-between text-xs font-mono">
+                    <span className="text-[#000000]/60">My Decision:</span>
                     <select
                       value={offer.decision}
                       onChange={(e) =>
@@ -190,7 +193,7 @@ export const OffersView: React.FC = () => {
                           e.target.value as 'pending' | 'accepted' | 'declined',
                         )
                       }
-                      className="rounded border border-slate-300 bg-white px-2 py-1 dark:border-slate-700 dark:bg-slate-800 font-medium"
+                      className="border border-[#000000]/25 bg-[#F8EEDF] px-2 py-1 text-xs font-mono font-medium text-[#000000] focus:border-[#8E1616] focus:outline-none"
                     >
                       <option value="pending">Pending</option>
                       <option value="accepted">Accepted Offer</option>

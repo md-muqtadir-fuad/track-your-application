@@ -40,15 +40,15 @@ export const ToastProvider: React.FC<{ children: React.ReactNode }> = ({ childre
           <div
             key={toast.id}
             role="status"
-            className="pointer-events-auto flex items-center justify-between gap-3 rounded-lg border border-slate-200 bg-white px-4 py-3 shadow-lg dark:border-slate-800 dark:bg-slate-900 text-sm text-slate-800 dark:text-slate-100 transition-all"
+            className="pointer-events-auto flex items-center justify-between gap-3 border border-[#000000] bg-white px-4 py-3 text-xs text-[#000000] shadow-sm transition-all"
           >
             <div className="flex items-center gap-2">
               {toast.type === 'error' ? (
-                <AlertCircle className="h-4 w-4 text-rose-500 shrink-0" />
+                <AlertCircle className="h-4 w-4 text-[#8E1616] shrink-0" />
               ) : (
-                <CheckCircle className="h-4 w-4 text-emerald-500 shrink-0" />
+                <CheckCircle className="h-4 w-4 text-[#8E1616] shrink-0" />
               )}
-              <span>{toast.message}</span>
+              <span className="font-mono">{toast.message}</span>
             </div>
 
             <div className="flex items-center gap-2">
@@ -59,7 +59,7 @@ export const ToastProvider: React.FC<{ children: React.ReactNode }> = ({ childre
                     toast.undoAction?.();
                     removeToast(toast.id);
                   }}
-                  className="inline-flex items-center gap-1 rounded bg-slate-100 px-2 py-1 text-xs font-semibold text-slate-700 hover:bg-slate-200 dark:bg-slate-800 dark:text-slate-200 dark:hover:bg-slate-700"
+                  className="inline-flex items-center gap-1 border border-[#000000]/30 bg-[#F8EEDF] px-2 py-1 text-[10px] font-mono font-bold text-[#000000] hover:bg-[#E8C999]"
                 >
                   <Undo2 className="h-3 w-3" />
                   {toast.undoLabel ?? 'Undo'}
@@ -68,7 +68,7 @@ export const ToastProvider: React.FC<{ children: React.ReactNode }> = ({ childre
               <button
                 type="button"
                 onClick={() => removeToast(toast.id)}
-                className="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 p-0.5"
+                className="text-[#000000]/40 hover:text-[#8E1616] p-0.5"
                 aria-label="Dismiss toast"
               >
                 <X className="h-3.5 w-3.5" />

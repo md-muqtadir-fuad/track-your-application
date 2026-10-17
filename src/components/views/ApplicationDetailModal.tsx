@@ -205,13 +205,13 @@ export const ApplicationDetailModal: React.FC<ApplicationDetailModalProps> = ({
     >
       <div className="space-y-6">
         {/* Header Badges & Actions */}
-        <div className="flex flex-wrap items-center justify-between gap-4 border-b border-slate-100 pb-4 dark:border-slate-800">
+        <div className="flex flex-wrap items-center justify-between gap-4 border-b border-[#000000]/15 pb-4">
           <div className="flex items-center gap-2">
-            <span className="text-xs text-slate-500">Status:</span>
+            <span className="text-xs font-mono text-[#000000]/60">Status:</span>
             <select
               value={app.status}
               onChange={(e) => handleStatusChange(e.target.value as ApplicationStatus)}
-              className="rounded-md border border-slate-300 bg-white px-2 py-1 text-xs font-semibold dark:border-slate-700 dark:bg-slate-800"
+              className="border border-[#000000]/25 bg-[#F8EEDF] px-2 py-1 text-xs font-mono text-[#000000] focus:border-[#8E1616] focus:outline-none"
             >
               {allStatuses.map((s) => (
                 <option key={s} value={s}>
@@ -228,7 +228,7 @@ export const ApplicationDetailModal: React.FC<ApplicationDetailModalProps> = ({
                 href={app.portal_url}
                 target="_blank"
                 rel="noreferrer"
-                className="inline-flex items-center gap-1 text-xs text-blue-600 hover:underline dark:text-blue-400"
+                className="inline-flex items-center gap-1 text-xs text-[#8E1616] hover:underline font-mono"
               >
                 <ExternalLink className="h-3 w-3" />
                 Portal {app.portal_username && `(${app.portal_username})`}
@@ -239,7 +239,7 @@ export const ApplicationDetailModal: React.FC<ApplicationDetailModalProps> = ({
                 href={app.program_url}
                 target="_blank"
                 rel="noreferrer"
-                className="inline-flex items-center gap-1 text-xs text-slate-500 hover:underline dark:text-slate-400"
+                className="inline-flex items-center gap-1 text-xs text-[#000000]/70 hover:text-[#8E1616] font-mono"
               >
                 <ExternalLink className="h-3 w-3" />
                 Program Page
@@ -249,8 +249,8 @@ export const ApplicationDetailModal: React.FC<ApplicationDetailModalProps> = ({
         </div>
 
         {waiverWarning && (
-          <div className="flex items-center gap-2 rounded-md bg-amber-50 p-3 text-xs text-amber-800 dark:bg-amber-950/50 dark:text-amber-300">
-            <AlertTriangle className="h-4 w-4 shrink-0 text-amber-600" />
+          <div className="flex items-center gap-2 border border-[#8E1616]/40 bg-[#E8C999]/30 p-3 text-xs text-[#8E1616] font-mono">
+            <AlertTriangle className="h-4 w-4 shrink-0 text-[#8E1616]" />
             <span>{waiverWarning}</span>
           </div>
         )}
@@ -265,19 +265,21 @@ export const ApplicationDetailModal: React.FC<ApplicationDetailModalProps> = ({
               timeAssumed={deadlineMilestone.time_assumed}
             />
           ) : (
-            <div className="rounded-md border border-dashed p-3 text-xs text-slate-400">
+            <div className="border border-dashed border-[#000000]/25 p-3 text-xs font-serif italic text-[#000000]/50 bg-white/40">
               No application deadline milestone recorded.
             </div>
           )}
 
-          <div className="rounded-md border border-slate-200 bg-white p-3 dark:border-slate-800 dark:bg-slate-900 flex flex-col justify-center">
+          <div className="border border-[#000000]/20 bg-white p-3 flex flex-col justify-center">
             <ProgressBar value={readiness} size="md" />
-            <p className="mt-1 text-[11px] text-slate-400">{readiness}% requirements completed</p>
+            <p className="mt-1 text-[11px] font-mono text-[#000000]/60">
+              {readiness}% requirements completed
+            </p>
           </div>
         </div>
 
         {/* Tab Navigation */}
-        <div className="flex border-b border-slate-200 dark:border-slate-800 text-xs">
+        <div className="flex border-b border-[#000000]/15 text-xs overflow-x-auto">
           {[
             {
               id: 'checklist',
@@ -297,10 +299,10 @@ export const ApplicationDetailModal: React.FC<ApplicationDetailModalProps> = ({
               key={tab.id}
               type="button"
               onClick={() => setActiveTab(tab.id as TabType)}
-              className={`px-3 py-2 font-medium border-b-2 transition-colors -mb-px whitespace-nowrap ${
+              className={`px-3 py-2 font-medium border-b-2 transition-colors -mb-px whitespace-nowrap text-xs font-mono uppercase tracking-wider ${
                 activeTab === tab.id
-                  ? 'border-blue-600 text-blue-600 dark:border-blue-400 dark:text-blue-400'
-                  : 'border-transparent text-slate-500 hover:text-slate-800 dark:hover:text-slate-200'
+                  ? 'border-[#8E1616] text-[#8E1616] font-bold'
+                  : 'border-transparent text-[#000000]/60 hover:text-[#000000]'
               }`}
             >
               {tab.label}
@@ -319,11 +321,11 @@ export const ApplicationDetailModal: React.FC<ApplicationDetailModalProps> = ({
                   placeholder="Add custom checklist requirement..."
                   value={newChecklistLabel}
                   onChange={(e) => setNewChecklistLabel(e.target.value)}
-                  className="flex-1 rounded-md border border-slate-300 px-3 py-1.5 text-xs text-slate-900 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100"
+                  className="flex-1 rounded-none border border-[#000000]/25 bg-[#F8EEDF] px-3 py-1.5 text-xs font-mono text-[#000000] focus:border-[#8E1616] focus:outline-none"
                 />
                 <button
                   type="submit"
-                  className="inline-flex items-center gap-1 rounded-md bg-blue-600 px-3 py-1.5 text-xs font-semibold text-white hover:bg-blue-700"
+                  className="inline-flex items-center gap-1 rounded-none bg-[#8E1616] px-3 py-1.5 text-xs font-mono font-bold uppercase tracking-wider text-[#F8EEDF] hover:bg-[#6d1010] border border-[#8E1616]"
                 >
                   <Plus className="h-3.5 w-3.5" />
                   Add
@@ -334,20 +336,20 @@ export const ApplicationDetailModal: React.FC<ApplicationDetailModalProps> = ({
                 {checklist.map((item) => (
                   <div
                     key={item.id}
-                    className="flex items-center justify-between rounded-md border border-slate-100 bg-slate-50/50 p-2 text-xs dark:border-slate-800 dark:bg-slate-900/50"
+                    className="flex items-center justify-between rounded-none border border-[#000000]/15 bg-[#E8C999]/15 p-2 text-xs"
                   >
                     <label className="flex items-center gap-2 cursor-pointer select-none">
                       <input
                         type="checkbox"
                         checked={item.status === 'done'}
                         onChange={() => handleToggleChecklist(item)}
-                        className="h-4 w-4 rounded border-slate-300 text-blue-600 focus:ring-blue-500"
+                        className="h-4 w-4 rounded-none border-[#000000]/30 accent-[#8E1616]"
                       />
                       <span
                         className={
                           item.status === 'done'
-                            ? 'line-through text-slate-400 dark:text-slate-500'
-                            : 'font-medium text-slate-800 dark:text-slate-200'
+                            ? 'line-through text-[#000000]/40 font-mono'
+                            : 'font-serif text-[#000000] font-medium'
                         }
                       >
                         {item.label}
@@ -356,14 +358,14 @@ export const ApplicationDetailModal: React.FC<ApplicationDetailModalProps> = ({
 
                     <div className="flex items-center gap-3">
                       {item.status === 'not_required' ? (
-                        <span className="rounded bg-slate-200 px-1.5 py-0.5 text-[10px] text-slate-600 dark:bg-slate-800 dark:text-slate-400">
+                        <span className="border border-[#000000]/20 bg-[#F8EEDF] px-1.5 py-0.5 text-[10px] font-mono text-[#000000]/70">
                           Not Required
                         </span>
                       ) : null}
                       <button
                         type="button"
                         onClick={() => handleDeleteChecklistItem(item.id)}
-                        className="text-slate-400 hover:text-rose-500 p-1"
+                        className="text-[#000000]/40 hover:text-[#8E1616] p-1"
                         aria-label="Delete requirement"
                       >
                         <Trash2 className="h-3.5 w-3.5" />
@@ -378,7 +380,7 @@ export const ApplicationDetailModal: React.FC<ApplicationDetailModalProps> = ({
           {/* 2. Letters Tab */}
           {activeTab === 'letters' && (
             <div className="space-y-4">
-              <p className="text-xs text-slate-500">
+              <p className="text-xs font-serif text-[#000000]/70">
                 Letters are requested per institution. Some portals do not allow changing
                 recommenders after submission.
               </p>
@@ -388,13 +390,13 @@ export const ApplicationDetailModal: React.FC<ApplicationDetailModalProps> = ({
                   return (
                     <div
                       key={req.id}
-                      className="flex items-center justify-between rounded-md border border-slate-200 p-3 text-xs dark:border-slate-800"
+                      className="flex items-center justify-between border border-[#000000]/15 bg-white p-3 text-xs"
                     >
                       <div>
-                        <p className="font-semibold text-slate-800 dark:text-slate-200">
+                        <p className="font-serif font-bold text-[#000000]">
                           {contact ? contact.name : 'Unknown Recommender'}
                         </p>
-                        <p className="text-[11px] text-slate-400">
+                        <p className="text-[11px] font-mono text-[#000000]/60">
                           {contact?.email} • {contact?.affiliation}
                         </p>
                       </div>
@@ -405,7 +407,7 @@ export const ApplicationDetailModal: React.FC<ApplicationDetailModalProps> = ({
                           onChange={(e) =>
                             handleLetterStatusChange(req.id, e.target.value as LetterRequestStatus)
                           }
-                          className="rounded-md border border-slate-300 bg-white px-2 py-1 text-xs dark:border-slate-700 dark:bg-slate-800"
+                          className="border border-[#000000]/25 bg-[#F8EEDF] px-2 py-1 text-xs font-mono text-[#000000] focus:border-[#8E1616] focus:outline-none"
                         >
                           <option value="not_requested">Not Requested</option>
                           <option value="asked">Asked</option>
@@ -425,13 +427,11 @@ export const ApplicationDetailModal: React.FC<ApplicationDetailModalProps> = ({
           {/* 3. Faculty Tab */}
           {activeTab === 'faculty' && (
             <div className="space-y-4">
-              <div className="rounded-md border border-slate-100 bg-slate-50 p-3 text-xs dark:border-slate-800 dark:bg-slate-900">
-                <span className="font-semibold text-slate-700 dark:text-slate-300">
-                  Faculty Contact Policy:
-                </span>{' '}
-                <span className="capitalize">{app.faculty_contact_policy}</span>
+              <div className="border border-[#000000]/15 bg-[#F8EEDF] p-3 text-xs">
+                <span className="font-serif font-bold text-[#000000]">Faculty Contact Policy:</span>{' '}
+                <span className="capitalize font-mono">{app.faculty_contact_policy}</span>
               </div>
-              <p className="text-xs text-slate-500">
+              <p className="text-xs font-serif text-[#000000]/70">
                 Review outreach interactions and prospective advisors linked to this department.
               </p>
               {contacts
@@ -439,15 +439,15 @@ export const ApplicationDetailModal: React.FC<ApplicationDetailModalProps> = ({
                 .map((fac) => (
                   <div
                     key={fac.id}
-                    className="flex items-center justify-between rounded-md border border-slate-200 p-3 text-xs dark:border-slate-800"
+                    className="flex items-center justify-between border border-[#000000]/15 bg-white p-3 text-xs"
                   >
                     <div>
-                      <p className="font-semibold text-slate-800 dark:text-slate-200">{fac.name}</p>
-                      <p className="text-[11px] text-slate-500">
+                      <p className="font-serif font-bold text-[#000000]">{fac.name}</p>
+                      <p className="text-[11px] font-mono text-[#000000]/60">
                         {fac.title} • {fac.email}
                       </p>
                     </div>
-                    <span className="rounded bg-blue-50 px-2 py-1 text-[11px] font-medium text-blue-700 dark:bg-blue-950 dark:text-blue-300 capitalize">
+                    <span className="border border-[#8E1616]/40 bg-[#E8C999]/30 px-2 py-0.5 text-[10px] font-mono font-bold text-[#8E1616] capitalize">
                       {fac.outreach_status.replace('_', ' ')}
                     </span>
                   </div>
@@ -461,16 +461,18 @@ export const ApplicationDetailModal: React.FC<ApplicationDetailModalProps> = ({
               {milestones.map((m) => (
                 <div
                   key={m.id}
-                  className="flex items-center justify-between rounded-md border border-slate-200 p-3 text-xs dark:border-slate-800"
+                  className="flex items-center justify-between border border-[#000000]/15 bg-white p-3 text-xs"
                 >
                   <div>
-                    <span className="font-semibold capitalize">{m.label}</span>
-                    <p className="font-mono text-slate-500 text-[11px]">
+                    <span className="font-serif font-bold text-[#000000] capitalize">
+                      {m.label}
+                    </span>
+                    <p className="font-mono text-[#000000]/60 text-[11px]">
                       {m.due_local} ({m.tz})
                     </p>
                   </div>
                   {m.time_assumed && (
-                    <span className="rounded bg-amber-100 px-1.5 py-0.5 text-[10px] text-amber-800 dark:bg-amber-950 dark:text-amber-300">
+                    <span className="border border-[#8E1616]/40 bg-[#E8C999]/30 px-1.5 py-0.5 text-[10px] font-mono text-[#8E1616]">
                       Time Assumed
                     </span>
                   )}
@@ -481,21 +483,21 @@ export const ApplicationDetailModal: React.FC<ApplicationDetailModalProps> = ({
 
           {/* 5. Fees & Waiver Tab */}
           {activeTab === 'fees' && (
-            <div className="space-y-4 text-xs">
+            <div className="space-y-4 text-xs font-mono">
               <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <span className="text-slate-500">Application Fee:</span>
-                  <p className="text-sm font-semibold">
+                <div className="border border-[#000000]/15 bg-[#F8EEDF] p-3">
+                  <span className="text-[#000000]/60">Application Fee:</span>
+                  <p className="text-sm font-bold text-[#000000]">
                     {app.fee_amount ? `${app.fee_amount} ${app.fee_currency}` : 'Not set'}
                   </p>
                 </div>
-                <div>
-                  <span className="text-slate-500">Waiver Route:</span>
-                  <p className="text-sm font-semibold capitalize">{app.waiver_route}</p>
+                <div className="border border-[#000000]/15 bg-[#F8EEDF] p-3">
+                  <span className="text-[#000000]/60">Waiver Route:</span>
+                  <p className="text-sm font-bold text-[#000000] capitalize">{app.waiver_route}</p>
                 </div>
-                <div>
-                  <span className="text-slate-500">Waiver Status:</span>
-                  <p className="text-sm font-semibold capitalize">
+                <div className="border border-[#000000]/15 bg-[#F8EEDF] p-3">
+                  <span className="text-[#000000]/60">Waiver Status:</span>
+                  <p className="text-sm font-bold text-[#8E1616] capitalize">
                     {app.waiver_status.replace('_', ' ')}
                   </p>
                 </div>
@@ -507,33 +509,35 @@ export const ApplicationDetailModal: React.FC<ApplicationDetailModalProps> = ({
           {activeTab === 'timeline' && (
             <div className="space-y-4">
               <div>
-                <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300">
+                <label className="block text-xs font-semibold text-[#000000]">
                   Application Notes & Requirements Log
                 </label>
                 <textarea
                   rows={4}
                   value={notesDraft}
                   onChange={(e) => setNotesDraft(e.target.value)}
-                  className="mt-1 block w-full rounded-md border border-slate-300 p-2.5 text-xs text-slate-900 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100"
+                  className="mt-1 block w-full border border-[#000000]/25 bg-[#F8EEDF] p-2.5 text-xs font-serif text-[#000000] focus:border-[#8E1616] focus:outline-none"
                 />
                 <button
                   type="button"
                   onClick={handleSaveNotes}
-                  className="mt-2 rounded-md bg-blue-600 px-3 py-1 text-xs font-semibold text-white hover:bg-blue-700"
+                  className="mt-2 bg-[#8E1616] px-3 py-1 text-xs font-mono font-bold uppercase tracking-wider text-[#F8EEDF] hover:bg-[#6d1010] border border-[#8E1616]"
                 >
                   Save Notes
                 </button>
               </div>
 
-              <div className="border-t border-slate-200 pt-3 dark:border-slate-800">
-                <h4 className="text-xs font-semibold text-slate-700 dark:text-slate-300 mb-2">
+              <div className="border-t border-[#000000]/15 pt-3">
+                <h4 className="text-xs font-serif font-bold text-[#000000] mb-2">
                   Status Audit Log
                 </h4>
-                <div className="space-y-1.5 text-xs">
+                <div className="space-y-1.5 text-xs font-mono">
                   {statusHistory.map((sh) => (
-                    <div key={sh.id} className="flex justify-between text-slate-500">
+                    <div key={sh.id} className="flex justify-between text-[#000000]/70">
                       <span>Changed to {sh.to_status}</span>
-                      <span className="font-mono text-[10px]">{sh.changed_at.slice(0, 16)}</span>
+                      <span className="text-[10px] text-[#000000]/50">
+                        {sh.changed_at.slice(0, 16)}
+                      </span>
                     </div>
                   ))}
                 </div>
@@ -546,11 +550,11 @@ export const ApplicationDetailModal: React.FC<ApplicationDetailModalProps> = ({
             <form onSubmit={handleSaveOffer} className="space-y-3 text-xs">
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block font-medium">Funding Type</label>
+                  <label className="block font-semibold text-[#000000]">Funding Type</label>
                   <select
                     name="funding_type"
                     defaultValue={offer?.funding_type ?? 'ta'}
-                    className="mt-1 block w-full rounded border border-slate-300 p-1.5 dark:border-slate-700 dark:bg-slate-800"
+                    className="mt-1 block w-full border border-[#000000]/25 bg-[#F8EEDF] p-1.5 font-mono text-[#000000] focus:border-[#8E1616] focus:outline-none"
                   >
                     <option value="fellowship">Fellowship</option>
                     <option value="ta">Teaching Assistantship (TA)</option>
@@ -560,24 +564,24 @@ export const ApplicationDetailModal: React.FC<ApplicationDetailModalProps> = ({
                   </select>
                 </div>
                 <div>
-                  <label className="block font-medium">Stipend (USD / Year)</label>
+                  <label className="block font-semibold text-[#000000]">Stipend (USD / Year)</label>
                   <input
                     type="number"
                     name="stipend_amount"
                     defaultValue={offer?.stipend_amount ?? ''}
                     placeholder="e.g. 34000"
-                    className="mt-1 block w-full rounded border border-slate-300 p-1.5 dark:border-slate-700 dark:bg-slate-800"
+                    className="mt-1 block w-full border border-[#000000]/25 bg-[#F8EEDF] p-1.5 font-mono text-[#000000] focus:border-[#8E1616] focus:outline-none"
                   />
                 </div>
               </div>
 
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block font-medium">Tuition Coverage</label>
+                  <label className="block font-semibold text-[#000000]">Tuition Coverage</label>
                   <select
                     name="tuition"
                     defaultValue={offer?.tuition ?? 'full'}
-                    className="mt-1 block w-full rounded border border-slate-300 p-1.5 dark:border-slate-700 dark:bg-slate-800"
+                    className="mt-1 block w-full border border-[#000000]/25 bg-[#F8EEDF] p-1.5 font-mono text-[#000000] focus:border-[#8E1616] focus:outline-none"
                   >
                     <option value="full">Full Tuition Waiver</option>
                     <option value="partial">Partial</option>
@@ -585,18 +589,18 @@ export const ApplicationDetailModal: React.FC<ApplicationDetailModalProps> = ({
                   </select>
                 </div>
                 <div>
-                  <label className="block font-medium">Years Guaranteed</label>
+                  <label className="block font-semibold text-[#000000]">Years Guaranteed</label>
                   <input
                     type="number"
                     name="years_guaranteed"
                     defaultValue={offer?.years_guaranteed ?? 5}
-                    className="mt-1 block w-full rounded border border-slate-300 p-1.5 dark:border-slate-700 dark:bg-slate-800"
+                    className="mt-1 block w-full border border-[#000000]/25 bg-[#F8EEDF] p-1.5 font-mono text-[#000000] focus:border-[#8E1616] focus:outline-none"
                   />
                 </div>
               </div>
 
               <div>
-                <label className="block font-medium">
+                <label className="block font-semibold text-[#000000]">
                   CGS April 15 Response Deadline (Prefilled)
                 </label>
                 <input
@@ -605,13 +609,13 @@ export const ApplicationDetailModal: React.FC<ApplicationDetailModalProps> = ({
                   defaultValue={
                     offer?.response_due_local ?? `${new Date().getFullYear() + 1}-04-15T23:59`
                   }
-                  className="mt-1 block w-full rounded border border-slate-300 p-1.5 font-mono dark:border-slate-700 dark:bg-slate-800"
+                  className="mt-1 block w-full border border-[#000000]/25 bg-[#F8EEDF] p-1.5 font-mono text-[#000000] focus:border-[#8E1616] focus:outline-none"
                 />
               </div>
 
               <button
                 type="submit"
-                className="mt-3 rounded-md bg-blue-600 px-3 py-1.5 text-xs font-semibold text-white hover:bg-blue-700"
+                className="mt-3 bg-[#8E1616] px-3 py-1.5 text-xs font-mono font-bold uppercase tracking-wider text-[#F8EEDF] hover:bg-[#6d1010] border border-[#8E1616]"
               >
                 Save Offer Details
               </button>

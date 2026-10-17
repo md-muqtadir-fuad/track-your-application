@@ -202,34 +202,34 @@ Muqtadir`;
       case 'submitted':
       case 'confirmed_received':
         return (
-          <span className="inline-flex items-center gap-1 rounded-md bg-emerald-50 px-2 py-1 text-[11px] font-semibold text-emerald-700 dark:bg-emerald-950/80 dark:text-emerald-300">
+          <span className="inline-flex items-center gap-1 rounded-none border border-[#000000]/30 bg-[#8E1616] px-2 py-0.5 text-[11px] font-mono font-bold uppercase text-[#F8EEDF]">
             <CheckCircle className="h-3 w-3" />
             Submitted
           </span>
         );
       case 'link_sent':
         return (
-          <span className="inline-flex items-center gap-1 rounded-md bg-indigo-50 px-2 py-1 text-[11px] font-semibold text-indigo-700 dark:bg-indigo-950/80 dark:text-indigo-300">
+          <span className="inline-flex items-center gap-1 rounded-none border border-[#000000]/40 bg-[#E8C999] px-2 py-0.5 text-[11px] font-mono font-bold uppercase text-[#000000]">
             <Send className="h-3 w-3" />
             Link Sent
           </span>
         );
       case 'asked':
         return (
-          <span className="inline-flex items-center gap-1 rounded-md bg-amber-50 px-2 py-1 text-[11px] font-semibold text-amber-700 dark:bg-amber-950/80 dark:text-amber-300">
+          <span className="inline-flex items-center gap-1 rounded-none border border-[#E8C999] bg-[#E8C999]/30 px-2 py-0.5 text-[11px] font-mono font-semibold uppercase text-[#8E1616]">
             <Clock className="h-3 w-3" />
             Asked
           </span>
         );
       case 'declined':
         return (
-          <span className="inline-flex items-center gap-1 rounded-md bg-rose-50 px-2 py-1 text-[11px] font-semibold text-rose-700 dark:bg-rose-950/80 dark:text-rose-300">
+          <span className="inline-flex items-center gap-1 rounded-none border border-[#8E1616] bg-[#8E1616]/10 px-2 py-0.5 text-[11px] font-mono font-bold uppercase text-[#8E1616]">
             Declined
           </span>
         );
       default:
         return (
-          <span className="inline-flex items-center gap-1 rounded-md bg-slate-100 px-2 py-1 text-[11px] font-medium text-slate-500 dark:bg-slate-800 dark:text-slate-400">
+          <span className="inline-flex items-center gap-1 rounded-none border border-[#000000]/15 bg-[#F8EEDF] px-2 py-0.5 text-[11px] font-mono text-[#000000]/50 uppercase">
             Not Requested
           </span>
         );
@@ -241,10 +241,10 @@ Muqtadir`;
       {/* Top action header */}
       <div className="flex flex-wrap items-center justify-between gap-4">
         <div>
-          <h3 className="text-sm font-semibold text-slate-900 dark:text-slate-100">
+          <h3 className="font-serif text-xl font-bold tracking-tight text-[#8E1616]">
             Recommenders Matrix
           </h3>
-          <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
+          <p className="font-mono text-xs text-[#000000]/70 mt-0.5">
             Click any cell to cycle status. Use "Copy reminder" to generate a polite consolidated
             request email.
           </p>
@@ -253,7 +253,7 @@ Muqtadir`;
         <button
           type="button"
           onClick={() => setIsAddModalOpen(true)}
-          className="inline-flex items-center gap-1.5 rounded-lg bg-blue-600 px-3.5 py-2 text-xs font-semibold text-white shadow-xs hover:bg-blue-700"
+          className="inline-flex items-center gap-1.5 rounded-none bg-[#8E1616] px-3.5 py-2 text-xs font-mono font-semibold uppercase tracking-wider text-[#F8EEDF] hover:bg-[#6d1010] border border-[#8E1616] transition-colors"
         >
           <Plus className="h-4 w-4" />
           Add Recommender
@@ -261,12 +261,12 @@ Muqtadir`;
       </div>
 
       {/* Recommenders Matrix Table */}
-      <div className="overflow-hidden rounded-xl border border-slate-200 bg-white shadow-xs dark:border-slate-800 dark:bg-slate-900">
+      <div className="overflow-hidden rounded-none border border-[#000000]/25 bg-[#ffffff]/80 shadow-xs">
         <div className="overflow-x-auto">
-          <table className="w-full text-left text-xs">
-            <thead className="border-b border-slate-200 bg-slate-50 dark:border-slate-800 dark:bg-slate-800/60 font-semibold text-slate-700 dark:text-slate-200">
-              <tr>
-                <th className="sticky left-0 z-20 bg-slate-50 dark:bg-slate-850 px-4 py-3 min-w-[240px]">
+          <table className="scientific-table w-full text-left text-xs text-[#000000]">
+            <thead>
+              <tr className="bg-[#E8C999]/30">
+                <th className="sticky left-0 z-20 bg-[#F8EEDF] px-4 py-3 min-w-[240px] border-r border-[#000000]/20 font-serif font-bold text-[#000000]">
                   Recommender
                 </th>
                 {activeApplications.map((app) => {
@@ -275,12 +275,12 @@ Muqtadir`;
                   return (
                     <th
                       key={app.id}
-                      className="px-4 py-3 min-w-[170px] border-l border-slate-200 dark:border-slate-800"
+                      className="px-4 py-3 min-w-[170px] border-l border-[#000000]/15"
                     >
-                      <p className="font-bold text-slate-900 dark:text-slate-100 truncate">
+                      <p className="font-serif font-bold text-sm text-[#000000] truncate">
                         {uni?.name}
                       </p>
-                      <p className="font-mono text-[10px] text-slate-500 font-normal">
+                      <p className="font-mono text-[10px] text-[#000000]/60 font-normal">
                         Due: {ms ? `${ms.due_local.slice(5, 10)} (${ms.tz.split('/')[1]})` : 'TBD'}
                       </p>
                     </th>
@@ -289,12 +289,12 @@ Muqtadir`;
               </tr>
             </thead>
 
-            <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
+            <tbody className="divide-y divide-[#000000]/10 bg-[#ffffff]/60">
               {recommenders.length === 0 ? (
                 <tr>
                   <td
                     colSpan={activeApplications.length + 1}
-                    className="py-12 text-center text-slate-400"
+                    className="py-12 text-center text-[#000000]/60 font-serif italic text-sm"
                   >
                     No recommenders added yet. Click "Add Recommender" to set up your references.
                   </td>
@@ -302,19 +302,19 @@ Muqtadir`;
               ) : (
                 recommenders.map((rec) => {
                   return (
-                    <tr key={rec.id} className="hover:bg-slate-50/50 dark:hover:bg-slate-800/30">
+                    <tr key={rec.id} className="hover:bg-[#E8C999]/20 transition-colors">
                       {/* Left sticky column */}
-                      <td className="sticky left-0 z-10 bg-white dark:bg-slate-900 px-4 py-3 border-r border-slate-200 dark:border-slate-800 shadow-xs">
+                      <td className="sticky left-0 z-10 bg-[#F8EEDF] px-4 py-3 border-r border-[#000000]/15">
                         <div className="flex items-center justify-between">
                           <div>
-                            <p className="font-bold text-slate-900 dark:text-slate-100">
+                            <p className="font-serif font-bold text-sm text-[#000000]">
                               {rec.name}
                             </p>
-                            <p className="text-[11px] text-slate-500">
+                            <p className="text-[11px] text-[#000000]/70 font-sans">
                               {rec.title} • {rec.affiliation}
                             </p>
                             {rec.email && (
-                              <p className="font-mono text-[10px] text-slate-400">{rec.email}</p>
+                              <p className="font-mono text-[10px] text-[#000000]/50">{rec.email}</p>
                             )}
                           </div>
 
@@ -323,7 +323,7 @@ Muqtadir`;
                               type="button"
                               onClick={() => handleCopyReminder(rec)}
                               title="Copy polite reminder email for pending programs"
-                              className="rounded p-1 text-slate-400 hover:text-blue-600 hover:bg-slate-100 dark:hover:bg-slate-800"
+                              className="rounded-none p-1 text-[#000000]/60 hover:text-[#8E1616] hover:bg-[#E8C999]/30 transition-colors"
                             >
                               <Copy className="h-4 w-4" />
                             </button>
@@ -332,7 +332,7 @@ Muqtadir`;
                                 type="button"
                                 onClick={() => handleOpenMail(rec)}
                                 title="Open in mail app"
-                                className="rounded p-1 text-slate-400 hover:text-blue-600 hover:bg-slate-100 dark:hover:bg-slate-800"
+                                className="rounded-none p-1 text-[#000000]/60 hover:text-[#8E1616] hover:bg-[#E8C999]/30 transition-colors"
                               >
                                 <Mail className="h-4 w-4" />
                               </button>
@@ -348,7 +348,7 @@ Muqtadir`;
                           <td
                             key={app.id}
                             onClick={() => handleCycleStatus(rec.id, app.id)}
-                            className="px-4 py-3 cursor-pointer hover:bg-blue-50/40 dark:hover:bg-blue-950/20 border-l border-slate-100 dark:border-slate-800/80 transition-colors"
+                            className="px-4 py-3 cursor-pointer hover:bg-[#E8C999]/30 border-l border-[#000000]/10 transition-colors"
                           >
                             {getStatusChip(lr?.status)}
                           </td>
@@ -373,47 +373,41 @@ Muqtadir`;
       >
         <form onSubmit={handleAddRecommender} className="space-y-4">
           <div>
-            <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300">
-              Full Name *
-            </label>
+            <label className="block text-xs font-semibold text-[#8E1616]">Full Name *</label>
             <input
               type="text"
               required
-              placeholder="e.g. Dr. Ada Placeholder"
+              placeholder="e.g. Dr. Ada Lovelace"
               value={newName}
               onChange={(e) => setNewName(e.target.value)}
-              className="mt-1 block w-full rounded-md border border-slate-300 px-3 py-2 text-xs text-slate-900 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100"
+              className="mt-1 block w-full rounded-none border border-[#000000]/25 bg-[#F8EEDF] px-3 py-2 text-xs text-[#000000] focus:border-[#8E1616] focus:outline-none"
             />
           </div>
 
           <div>
-            <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300">
-              Email Address
-            </label>
+            <label className="block text-xs font-semibold text-[#8E1616]">Email Address</label>
             <input
               type="email"
               placeholder="e.g. professor@example.edu"
               value={newEmail}
               onChange={(e) => setNewEmail(e.target.value)}
-              className="mt-1 block w-full rounded-md border border-slate-300 px-3 py-2 text-xs text-slate-900 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100"
+              className="mt-1 block w-full rounded-none border border-[#000000]/25 bg-[#F8EEDF] px-3 py-2 text-xs text-[#000000] focus:border-[#8E1616] focus:outline-none font-mono"
             />
           </div>
 
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300">
-                Title
-              </label>
+              <label className="block text-xs font-semibold text-[#8E1616]">Title</label>
               <input
                 type="text"
                 placeholder="e.g. Associate Professor"
                 value={newTitle}
                 onChange={(e) => setNewTitle(e.target.value)}
-                className="mt-1 block w-full rounded-md border border-slate-300 px-3 py-2 text-xs text-slate-900 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100"
+                className="mt-1 block w-full rounded-none border border-[#000000]/25 bg-[#F8EEDF] px-3 py-2 text-xs text-[#000000] focus:border-[#8E1616] focus:outline-none"
               />
             </div>
             <div>
-              <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300">
+              <label className="block text-xs font-semibold text-[#8E1616]">
                 Affiliation / Department
               </label>
               <input
@@ -421,22 +415,22 @@ Muqtadir`;
                 placeholder="e.g. Department of Computer Science"
                 value={newAffiliation}
                 onChange={(e) => setNewAffiliation(e.target.value)}
-                className="mt-1 block w-full rounded-md border border-slate-300 px-3 py-2 text-xs text-slate-900 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100"
+                className="mt-1 block w-full rounded-none border border-[#000000]/25 bg-[#F8EEDF] px-3 py-2 text-xs text-[#000000] focus:border-[#8E1616] focus:outline-none"
               />
             </div>
           </div>
 
-          <div className="flex justify-end gap-2 pt-4 border-t border-slate-200 dark:border-slate-800">
+          <div className="flex justify-end gap-2 pt-4 border-t border-[#000000]/15">
             <button
               type="button"
               onClick={() => setIsAddModalOpen(false)}
-              className="rounded-md border border-slate-300 px-3 py-1.5 text-xs text-slate-600 hover:bg-slate-50 dark:border-slate-700 dark:text-slate-300"
+              className="rounded-none border border-[#000000]/30 bg-[#F8EEDF] px-3 py-1.5 text-xs text-[#000000] hover:bg-[#E8C999]/30 transition-colors"
             >
               Cancel
             </button>
             <button
               type="submit"
-              className="rounded-md bg-blue-600 px-4 py-1.5 text-xs font-semibold text-white hover:bg-blue-700"
+              className="rounded-none bg-[#8E1616] px-4 py-1.5 text-xs font-mono font-bold uppercase tracking-wider text-[#F8EEDF] hover:bg-[#6d1010] border border-[#8E1616]"
             >
               Add Recommender
             </button>

@@ -9,10 +9,6 @@ dist-ssr/
 build/
 *.local
 
-# Tauri build artifacts & bundles
-src-tauri/target/
-src-tauri/gen/
-bundles/
 
 # Databases, exports, and backups (Strictly never commit)
 *.db

@@ -4,19 +4,31 @@ import type { Executor, QueryResult } from './executor';
 export class SqlJsExecutor implements Executor {
   private db: Database | null = null;
 
-  async init(): Promise<void> {
+  async init(data?: Uint8Array): Promise<void> {
     if (!this.db) {
-      const SQL = await initSqlJs();
-      this.db = new SQL.Database();
+      const isNodeOrTest = typeof process !== 'undefined' && Boolean(process.versions?.node);
+      const SQL = await initSqlJs(
+        isNodeOrTest
+          ? undefined
+          : {
+              locateFile: () => '/sql-wasm.wasm',
+            },
+      );
+      this.db = data ? new SQL.Database(data) : new SQL.Database();
       // Enable foreign keys
       this.db.run('PRAGMA foreign_keys = ON;');
     }
   }
 
-  static async create(): Promise<SqlJsExecutor> {
+  static async create(data?: Uint8Array): Promise<SqlJsExecutor> {
     const executor = new SqlJsExecutor();
-    await executor.init();
+    await executor.init(data);
     return executor;
+  }
+
+  exportBinary(): Uint8Array | null {
+    if (!this.db) return null;
+    return this.db.export();
   }
 
   private normalizeQuery(query: string): string {
