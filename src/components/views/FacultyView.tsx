@@ -46,7 +46,7 @@ export const FacultyView: React.FC = () => {
     const [fac, unis, inters] = await Promise.all([
       repos.contacts.list('faculty'),
       repos.universities.list(),
-      repos.interactions.listRecent(100),
+      repos.interactions.listRecent(500),
     ]);
     setFacultyList(fac);
     setUniversities(unis);
@@ -298,7 +298,6 @@ export const FacultyView: React.FC = () => {
           filteredFaculty.map((fac) => {
             const uni = fac.university_id ? uniMap.get(fac.university_id) : null;
             const facInteractions = interactions.filter((i) => i.contact_id === fac.id);
-            const latestInteraction = facInteractions[0];
             const isFollowUpDue =
               fac.next_follow_up_on && DateTime.fromISO(fac.next_follow_up_on) <= now;
 
@@ -316,7 +315,8 @@ export const FacultyView: React.FC = () => {
                       </p>
                       {uni && (
                         <p className="text-xs font-serif font-bold text-[#8E1616] mt-0.5">
-                          {uni.name} ({uni.city})
+                          {uni.name}
+                          {uni.city?.trim() ? ` (${uni.city.trim()})` : ''}
                         </p>
                       )}
                     </div>
@@ -354,15 +354,37 @@ export const FacultyView: React.FC = () => {
                     </div>
                   )}
 
-                  {/* Latest Interaction & Follow-up date */}
-                  <div className="mt-4 space-y-1.5 border-t border-[#000000]/10 pt-3 text-xs">
-                    {latestInteraction ? (
-                      <div className="flex items-center gap-1.5 text-[#000000]/80">
-                        <MessageSquare className="h-3.5 w-3.5 text-[#8E1616] shrink-0" />
-                        <span className="line-clamp-1">{latestInteraction.summary}</span>
-                        <span className="font-mono text-[10px] text-[#000000]/50 shrink-0">
-                          ({latestInteraction.occurred_on.slice(0, 10)})
-                        </span>
+                  {/* Interaction Logs History & Follow-up date */}
+                  <div className="mt-4 border-t border-[#000000]/10 pt-3 text-xs">
+                    {facInteractions.length > 0 ? (
+                      <div className="space-y-2">
+                        <div className="flex items-center justify-between text-[11px] font-mono">
+                          <span className="font-bold uppercase tracking-wider text-[#8E1616]">
+                            Interaction History ({facInteractions.length})
+                          </span>
+                        </div>
+
+                        <div className="space-y-2 max-h-52 overflow-y-auto pr-1">
+                          {facInteractions.map((log) => (
+                            <div
+                              key={log.id}
+                              className="border-l-2 border-[#8E1616] bg-[#F8EEDF]/60 p-2 text-xs"
+                            >
+                              <div className="flex items-center justify-between gap-2 text-[10px] font-mono">
+                                <span className="font-bold uppercase tracking-wide text-[#8E1616]">
+                                  {log.channel.toUpperCase()} •{' '}
+                                  {log.direction === 'sent' ? 'SENT' : 'RECEIVED'}
+                                </span>
+                                <span className="text-[#000000]/60">
+                                  {log.occurred_on.replace('T', ' ').slice(0, 16)}
+                                </span>
+                              </div>
+                              <p className="mt-1 font-serif text-xs text-[#000000] whitespace-pre-wrap">
+                                {log.summary}
+                              </p>
+                            </div>
+                          ))}
+                        </div>
                       </div>
                     ) : (
                       <div className="flex items-center gap-1.5 font-mono text-[11px] text-[#8E1616]">
@@ -373,7 +395,7 @@ export const FacultyView: React.FC = () => {
 
                     {fac.next_follow_up_on && (
                       <div
-                        className={`flex items-center gap-1.5 font-mono text-xs ${
+                        className={`mt-2.5 flex items-center gap-1.5 font-mono text-xs ${
                           isFollowUpDue ? 'text-[#8E1616] font-bold' : 'text-[#000000]/80'
                         }`}
                       >
