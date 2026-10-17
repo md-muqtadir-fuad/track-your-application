@@ -447,8 +447,16 @@ export const ApplicationDetailModal: React.FC<ApplicationDetailModalProps> = ({
                         {fac.title} • {fac.email}
                       </p>
                     </div>
-                    <span className="border border-[#8E1616]/40 bg-[#E8C999]/30 px-2 py-0.5 text-[10px] font-mono font-bold text-[#8E1616] capitalize">
-                      {fac.outreach_status.replace('_', ' ')}
+                    <span
+                      className={`border px-2 py-0.5 text-[10px] font-mono font-bold capitalize ${
+                        fac.outreach_status === 'not_contacted'
+                          ? 'border-[#8E1616] border-dashed bg-[#F8EEDF] text-[#8E1616]'
+                          : 'border-[#8E1616]/40 bg-[#E8C999]/30 text-[#8E1616]'
+                      }`}
+                    >
+                      {fac.outreach_status === 'not_contacted'
+                        ? 'Not Mailed Yet'
+                        : fac.outreach_status.replace('_', ' ')}
                     </span>
                   </div>
                 ))}

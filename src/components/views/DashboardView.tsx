@@ -544,7 +544,10 @@ export const DashboardView: React.FC<{
                               {appFaculty.name}
                             </div>
                             <div className="font-mono text-[10px] text-[#8E1616]">
-                              Status: {appFaculty.outreach_status.toUpperCase()}
+                              Status:{' '}
+                              {appFaculty.outreach_status === 'not_contacted'
+                                ? 'NOT MAILED YET'
+                                : appFaculty.outreach_status.replace('_', ' ').toUpperCase()}
                             </div>
                           </div>
                         ) : (

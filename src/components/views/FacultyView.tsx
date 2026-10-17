@@ -1,10 +1,12 @@
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
-import { Plus, Mail, ExternalLink, Clock, MessageSquare } from 'lucide-react';
+import { Plus, Mail, ExternalLink, Clock, MessageSquare, Send } from 'lucide-react';
 import { DateTime } from 'luxon';
 import { useDatabase } from '../../lib/db/context';
 import { useToast } from '../ui/ToastContext';
 import { Modal } from '../ui/Modal';
 import type { Contact, University, Interaction, OutreachStatus } from '../../lib/db/schema';
+
+type FacultyFilterMode = 'all' | 'not_mailed' | 'emailed' | 'due';
 
 export const FacultyView: React.FC = () => {
   const { repos, version, refresh } = useDatabase();
@@ -15,7 +17,7 @@ export const FacultyView: React.FC = () => {
   const [interactions, setInteractions] = useState<Interaction[]>([]);
 
   // Filter
-  const [filterMode, setFilterMode] = useState<'all' | 'due'>('all');
+  const [filterMode, setFilterMode] = useState<FacultyFilterMode>('all');
 
   // Add Faculty Modal
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
@@ -25,6 +27,7 @@ export const FacultyView: React.FC = () => {
   const [email, setEmail] = useState('');
   const [website, setWebsite] = useState('');
   const [universityId, setUniversityId] = useState<string>('');
+  const [addOutreachStatus, setAddOutreachStatus] = useState<OutreachStatus>('not_contacted');
   const [notes, setNotes] = useState('');
 
   // Log Interaction Modal
@@ -64,13 +67,42 @@ export const FacultyView: React.FC = () => {
 
   const now = DateTime.now();
 
+  const notMailedCount = useMemo(
+    () => facultyList.filter((f) => f.outreach_status === 'not_contacted').length,
+    [facultyList],
+  );
+
+  const emailedCount = useMemo(
+    () => facultyList.filter((f) => f.outreach_status !== 'not_contacted').length,
+    [facultyList],
+  );
+
+  const dueCount = useMemo(
+    () =>
+      facultyList.filter((f) => {
+        if (!f.next_follow_up_on) return false;
+        const dt = DateTime.fromISO(f.next_follow_up_on);
+        return dt <= now.plus({ days: 1 });
+      }).length,
+    [facultyList, now],
+  );
+
   const filteredFaculty = useMemo(() => {
     if (filterMode === 'all') return facultyList;
-    return facultyList.filter((f) => {
-      if (!f.next_follow_up_on) return false;
-      const dt = DateTime.fromISO(f.next_follow_up_on);
-      return dt <= now.plus({ days: 1 });
-    });
+    if (filterMode === 'not_mailed') {
+      return facultyList.filter((f) => f.outreach_status === 'not_contacted');
+    }
+    if (filterMode === 'emailed') {
+      return facultyList.filter((f) => f.outreach_status !== 'not_contacted');
+    }
+    if (filterMode === 'due') {
+      return facultyList.filter((f) => {
+        if (!f.next_follow_up_on) return false;
+        const dt = DateTime.fromISO(f.next_follow_up_on);
+        return dt <= now.plus({ days: 1 });
+      });
+    }
+    return facultyList;
   }, [facultyList, filterMode, now]);
 
   const handleAddFaculty = async (e: React.FormEvent) => {
@@ -85,17 +117,37 @@ export const FacultyView: React.FC = () => {
       email: email.trim(),
       website: website.trim(),
       university_id: universityId || null,
-      outreach_status: 'not_contacted',
+      outreach_status: addOutreachStatus,
       notes: notes.trim(),
     });
 
-    showToast({ message: `Added faculty member ${name}.` });
+    showToast({
+      message: `Added faculty member ${name} (${
+        addOutreachStatus === 'not_contacted'
+          ? 'Not Mailed Yet'
+          : addOutreachStatus.replace('_', ' ')
+      }).`,
+    });
     setName('');
     setEmail('');
     setAffiliation('');
     setWebsite('');
     setNotes('');
+    setAddOutreachStatus('not_contacted');
     setIsAddModalOpen(false);
+    refresh();
+  };
+
+  const handleQuickStatusChange = async (contactId: string, status: OutreachStatus) => {
+    if (!repos) return;
+    await repos.contacts.update(contactId, {
+      outreach_status: status,
+    });
+    showToast({
+      message: `Status updated to ${
+        status === 'not_contacted' ? 'Not Mailed Yet' : status.replace('_', ' ')
+      }.`,
+    });
     refresh();
   };
 
@@ -126,9 +178,9 @@ export const FacultyView: React.FC = () => {
   const getStatusBadge = (status: OutreachStatus) => {
     const config: Record<OutreachStatus, { label: string; bg: string; text: string }> = {
       not_contacted: {
-        label: 'Not Contacted',
-        bg: 'bg-transparent border border-[#000000]/25',
-        text: 'text-[#000000]/60 font-mono',
+        label: 'NOT MAILED YET',
+        bg: 'bg-[#F8EEDF] border-2 border-[#8E1616] border-dashed',
+        text: 'text-[#8E1616] font-mono font-bold tracking-wider',
       },
       emailed: {
         label: 'Emailed',
@@ -172,7 +224,7 @@ export const FacultyView: React.FC = () => {
       {/* Header controls */}
       <div className="flex flex-wrap items-center justify-between gap-4">
         <div className="flex items-center gap-3">
-          <div className="flex rounded-none border border-[#000000]/25 bg-[#F8EEDF] p-0.5 text-xs font-mono uppercase tracking-wider">
+          <div className="flex flex-wrap rounded-none border border-[#000000]/25 bg-[#F8EEDF] p-0.5 text-xs font-mono uppercase tracking-wider">
             <button
               type="button"
               onClick={() => setFilterMode('all')}
@@ -186,6 +238,28 @@ export const FacultyView: React.FC = () => {
             </button>
             <button
               type="button"
+              onClick={() => setFilterMode('not_mailed')}
+              className={`rounded-none px-3 py-1.5 transition-colors ${
+                filterMode === 'not_mailed'
+                  ? 'bg-[#8E1616] text-[#F8EEDF] font-bold shadow-xs'
+                  : 'text-[#000000]/70 hover:text-[#000000]'
+              }`}
+            >
+              Not Mailed Yet ({notMailedCount})
+            </button>
+            <button
+              type="button"
+              onClick={() => setFilterMode('emailed')}
+              className={`rounded-none px-3 py-1.5 transition-colors ${
+                filterMode === 'emailed'
+                  ? 'bg-[#8E1616] text-[#F8EEDF] font-bold shadow-xs'
+                  : 'text-[#000000]/70 hover:text-[#000000]'
+              }`}
+            >
+              Outreach Active ({emailedCount})
+            </button>
+            <button
+              type="button"
               onClick={() => setFilterMode('due')}
               className={`rounded-none px-3 py-1.5 transition-colors ${
                 filterMode === 'due'
@@ -193,7 +267,7 @@ export const FacultyView: React.FC = () => {
                   : 'text-[#000000]/70 hover:text-[#000000]'
               }`}
             >
-              Follow-ups Due
+              Follow-ups Due ({dueCount})
             </button>
           </div>
         </div>
@@ -211,8 +285,14 @@ export const FacultyView: React.FC = () => {
       {/* Faculty Cards Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {filteredFaculty.length === 0 ? (
-          <div className="col-span-2 border border-dashed border-[#000000]/25 p-12 text-center text-xs font-serif italic text-[#000000]/50 bg-white/40">
-            No faculty contacts found in this view.
+          <div className="col-span-2 border border-dashed border-[#000000]/25 p-12 text-center text-xs font-serif italic text-[#000000]/60 bg-white/40">
+            {filterMode === 'not_mailed'
+              ? 'No uncontacted faculty. You have mailed everyone on your prospective advisor list!'
+              : filterMode === 'due'
+                ? 'No follow-ups currently due. Great job keeping up with outreach!'
+                : filterMode === 'emailed'
+                  ? 'No active outreach yet. Select "Not Mailed Yet" to view prospective faculty to contact.'
+                  : 'No faculty contacts found in this view. Click "Add Faculty Contact" to add prospective advisors.'}
           </div>
         ) : (
           filteredFaculty.map((fac) => {
@@ -276,13 +356,18 @@ export const FacultyView: React.FC = () => {
 
                   {/* Latest Interaction & Follow-up date */}
                   <div className="mt-4 space-y-1.5 border-t border-[#000000]/10 pt-3 text-xs">
-                    {latestInteraction && (
+                    {latestInteraction ? (
                       <div className="flex items-center gap-1.5 text-[#000000]/80">
                         <MessageSquare className="h-3.5 w-3.5 text-[#8E1616] shrink-0" />
                         <span className="line-clamp-1">{latestInteraction.summary}</span>
                         <span className="font-mono text-[10px] text-[#000000]/50 shrink-0">
                           ({latestInteraction.occurred_on.slice(0, 10)})
                         </span>
+                      </div>
+                    ) : (
+                      <div className="flex items-center gap-1.5 font-mono text-[11px] text-[#8E1616]">
+                        <span className="h-1.5 w-1.5 rounded-full bg-[#8E1616] animate-pulse shrink-0" />
+                        <span>Not mailed yet — awaiting prospective inquiry email</span>
                       </div>
                     )}
 
@@ -302,19 +387,73 @@ export const FacultyView: React.FC = () => {
                   </div>
                 </div>
 
-                {/* Bottom action */}
-                <div className="mt-4 flex justify-end gap-2 border-t border-[#000000]/10 pt-3">
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setInteractionContact(fac);
-                      setNewOutreachStatus(fac.outreach_status);
-                    }}
-                    className="inline-flex items-center gap-1 border border-[#000000]/25 bg-[#F8EEDF] px-3 py-1.5 text-xs font-mono font-semibold uppercase tracking-wider text-[#000000] hover:bg-[#E8C999]/40 hover:border-[#8E1616] transition-colors"
-                  >
-                    <Mail className="h-3.5 w-3.5 text-[#8E1616]" />
-                    Log Email / Interaction
-                  </button>
+                {/* Bottom actions & Inline status selector */}
+                <div className="mt-4 flex flex-wrap items-center justify-between gap-2 border-t border-[#000000]/10 pt-3">
+                  <div className="flex items-center gap-1.5">
+                    <span className="text-[10px] font-mono uppercase tracking-wider text-[#000000]/60">
+                      Status:
+                    </span>
+                    <select
+                      value={fac.outreach_status}
+                      onChange={(e) =>
+                        handleQuickStatusChange(fac.id, e.target.value as OutreachStatus)
+                      }
+                      className="border border-[#000000]/25 bg-[#F8EEDF] px-2 py-1 text-xs font-mono font-medium text-[#000000] focus:border-[#8E1616] focus:outline-none"
+                    >
+                      <option value="not_contacted">Not Mailed Yet</option>
+                      <option value="emailed">Emailed (Sent)</option>
+                      <option value="replied_positive">Replied: Positive</option>
+                      <option value="replied_neutral">Replied: Neutral</option>
+                      <option value="replied_no">Replied: No Openings</option>
+                      <option value="meeting_set">Meeting Set</option>
+                      <option value="met">Met</option>
+                    </select>
+                  </div>
+
+                  <div className="flex items-center gap-2">
+                    {fac.email && fac.outreach_status === 'not_contacted' && (
+                      <a
+                        href={`mailto:${fac.email}?subject=${encodeURIComponent(
+                          `Prospective PhD Inquiry - ${uni ? uni.name : 'Research Lab'}`,
+                        )}`}
+                        className="inline-flex items-center gap-1 border border-[#000000]/25 bg-[#F8EEDF] px-2.5 py-1.5 text-xs font-mono font-semibold uppercase tracking-wider text-[#8E1616] hover:bg-[#E8C999]/40 hover:border-[#8E1616] transition-colors"
+                        title="Draft email in default mail client"
+                      >
+                        <Mail className="h-3.5 w-3.5" />
+                        Draft Mail
+                      </a>
+                    )}
+
+                    {fac.outreach_status === 'not_contacted' ? (
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setInteractionContact(fac);
+                          setNewOutreachStatus('emailed');
+                          setInterDirection('sent');
+                          setInterChannel('email');
+                          setInterSummary(`Sent initial inquiry email to ${fac.name}.`);
+                        }}
+                        className="inline-flex items-center gap-1 border border-[#8E1616] bg-[#8E1616] px-3 py-1.5 text-xs font-mono font-bold uppercase tracking-wider text-[#F8EEDF] hover:bg-[#6d1010] transition-colors"
+                      >
+                        <Send className="h-3.5 w-3.5" />
+                        Log Initial Mail
+                      </button>
+                    ) : (
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setInteractionContact(fac);
+                          setNewOutreachStatus(fac.outreach_status);
+                          setInterSummary('');
+                        }}
+                        className="inline-flex items-center gap-1 border border-[#000000]/25 bg-[#F8EEDF] px-3 py-1.5 text-xs font-mono font-semibold uppercase tracking-wider text-[#000000] hover:bg-[#E8C999]/40 hover:border-[#8E1616] transition-colors"
+                      >
+                        <MessageSquare className="h-3.5 w-3.5 text-[#8E1616]" />
+                        Log Interaction
+                      </button>
+                    )}
+                  </div>
                 </div>
               </div>
             );
@@ -418,6 +557,26 @@ export const FacultyView: React.FC = () => {
             />
           </div>
 
+          <div>
+            <label className="block font-semibold text-[#000000]">Initial Outreach Status</label>
+            <select
+              value={addOutreachStatus}
+              onChange={(e) => setAddOutreachStatus(e.target.value as OutreachStatus)}
+              className="mt-1 block w-full border border-[#000000]/25 bg-[#F8EEDF] px-3 py-2 text-xs font-mono text-[#000000] focus:border-[#8E1616] focus:outline-none"
+            >
+              <option value="not_contacted">Not Mailed Yet (To Contact)</option>
+              <option value="emailed">Emailed (Already Sent)</option>
+              <option value="replied_positive">Replied: Positive</option>
+              <option value="replied_neutral">Replied: Neutral</option>
+              <option value="replied_no">Replied: No Openings</option>
+              <option value="meeting_set">Meeting Set</option>
+              <option value="met">Met</option>
+            </select>
+            <p className="mt-1 text-[11px] font-serif text-[#000000]/60">
+              Default is &quot;Not Mailed Yet&quot; for newly researched prospective advisors.
+            </p>
+          </div>
+
           <div className="flex justify-end gap-2 pt-4 border-t border-[#000000]/15">
             <button
               type="button"
@@ -516,6 +675,7 @@ export const FacultyView: React.FC = () => {
                 onChange={(e) => setNewOutreachStatus(e.target.value as OutreachStatus)}
                 className="mt-1 block w-full border border-[#000000]/25 bg-[#F8EEDF] p-1.5 font-mono text-[#000000] focus:border-[#8E1616] focus:outline-none"
               >
+                <option value="not_contacted">Not Mailed Yet (Reset status)</option>
                 <option value="emailed">Emailed (Awaiting reply)</option>
                 <option value="replied_positive">Replied: Positive</option>
                 <option value="replied_neutral">Replied: Neutral</option>

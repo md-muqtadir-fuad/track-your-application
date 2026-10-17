@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Dedicated "Not Mailed Yet" filter tab, dynamic count badges, inline status switcher, and initial inquiry actions in Faculty view.
 - Web application transition with in-browser SQLite WebAssembly (`sql.js`) and IndexedDB snapshot persistence.
 - Firebase Authentication with Google Sign-In and Cloud Firestore synchronization.
 - Production Cloud Firestore security rules (`firestore.rules`) with isolated user dossier authorization.
